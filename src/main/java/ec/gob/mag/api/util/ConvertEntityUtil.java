@@ -1,0 +1,53 @@
+package ec.gob.mag.api.util;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.List;
+
+@Service("convertEntityUtil")
+public class ConvertEntityUtil {
+
+	@Autowired
+	@Qualifier("consumer")
+	private Consumer consumer;
+
+	public <T> T ConvertSingleEntityGET(String pathMicro, String auth, Class<T> clazz) throws IOException,
+			NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String jsonString = null;
+		ObjectMapper mprObjecto = new ObjectMapper();
+		mprObjecto.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		System.out.println("URL VALUE GET: " + pathMicro);
+		Object responseEntity = consumer.doGet(pathMicro, auth);
+		jsonString = mprObjecto.writeValueAsString(responseEntity);
+		return mprObjecto.readValue(jsonString, clazz);
+	}
+
+	public <T> T ConvertSingleEntityPOST(String pathMicro, String sendData, String auth, Class<T> clazz)
+			throws IOException, NoSuchFieldException, SecurityException, IllegalArgumentException,
+			IllegalAccessException {
+		String jsonString = null;
+		ObjectMapper mprObjecto = new ObjectMapper();
+		mprObjecto.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		System.out.println("URL VALUE POST: " + pathMicro);
+		Object responseEntity = consumer.doPost(pathMicro, sendData, auth);
+		jsonString = mprObjecto.writeValueAsString(responseEntity);
+		return mprObjecto.readValue(jsonString, clazz);
+	}
+
+	public <T> T ConvertListEntity(String pathMicro, String auth, Class<T> clazz) throws IOException,
+			NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String jsonString = null;
+		ObjectMapper mprObjecto = new ObjectMapper();
+		mprObjecto.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		System.out.println("URL VALUE: " + pathMicro);
+		Object responseEntity = consumer.doGet(pathMicro, auth);
+		jsonString = mprObjecto.writeValueAsString(responseEntity);
+		return mprObjecto.readValue(jsonString, mprObjecto.getTypeFactory().constructCollectionType(List.class, clazz));
+	}
+
+}
