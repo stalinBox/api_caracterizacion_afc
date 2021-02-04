@@ -1,0 +1,52 @@
+# This file is a template, and might need editing before it works on your project.
+stages:
+  - despliegue
+
+variables:
+#se debe colocar el nombre del war resultante miartefacto.war
+  NOMBRE_WAR: "AQUI_ESCRIBA_EL_NOMBRE.war"
+  DESARROLLO_IP: "10.10.1.52:9990" 
+  PRUEBAS_IP: "10.10.1.121:9990" 
+  PRODUCCION_IP: "192.168.1.20:9990" 
+
+despliegue_desarrollo:
+  stage: despliegue
+  allow_failure: false
+  script:
+    - mvn clean install
+    - mvn install -DSkiptests
+    - /opt/wildfly/bin/jboss-cli.sh --connect --controller=$DESARROLLO_IP  --user=$WILDFLY_DESARROLLO_USUARIO --password=$WILDFLY_DESARROLLO_PASSWORD --command="deploy target/$NOMBRE_WAR --force"
+  tags:
+    - shell
+    - wildfly
+  only:
+    - desarrollo
+
+
+despliegue_pruebas:
+  stage: despliegue
+  allow_failure: false
+  script:
+    - mvn clean install
+    - mvn install -DSkiptests
+    - /opt/wildfly/bin/jboss-cli.sh --connect --controller=$PRUEBAS_IP  --user=$WILDFLY_PRUEBAS_USUARIO --password=$WILDFLY_PRUEBAS_PASSWORD --command="deploy target/$NOMBRE_WAR --force"
+  tags:
+    - shell
+    - wildfly
+  only:
+    - pruebas
+
+despliegue_produccion:
+  stage: despliegue
+  allow_failure: false
+  script:
+    - mvn clean install
+    - mvn install -DSkiptests
+    - /opt/wildfly/bin/jboss-cli.sh --connect --controller=$PRODUCCION_IP  --user=$WILDFLY_PRODUCCION_USUARIO --password=$WILDFLY_PRODUCCION_PASSWORD --command="deploy target/$NOMBRE_WAR --force"
+  tags:
+    - shell
+    - wildfly
+  only:
+    - master
+
+

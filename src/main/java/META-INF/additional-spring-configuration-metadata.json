@@ -1,0 +1,182 @@
+{"properties": [
+  {
+    "name": "url.servidor_micro",
+    "type": "java.lang.String",
+    "description": "A description for 'url.servidor_micro'"
+  },
+  {
+    "name": "url.renagro",
+    "type": "java.lang.String",
+    "description": "A description for 'url.renagro'"
+  },
+  {
+    "name": "url.logonAlfresco",
+    "type": "java.lang.String",
+    "description": "A description for 'url.logonAlfresco'"
+  },
+  {
+    "name": "url.urlUploadAlfresco",
+    "type": "java.lang.String",
+    "description": "A description for 'url.urlUploadAlfresco'"
+  },
+  {
+    "name": "param.brisId",
+    "type": "java.lang.String",
+    "description": "A description for 'param.brisId'"
+  },
+  {
+    "name": "param.sedpId",
+    "type": "java.lang.String",
+    "description": "A description for 'param.sedpId'"
+  },
+  {
+    "name": "param.secdId",
+    "type": "java.lang.String",
+    "description": "A description for 'param.secdId'"
+  },
+  {
+    "name": "param.bolpId",
+    "type": "java.lang.String",
+    "description": "A description for 'param.bolpId'"
+  },
+  {
+    "name": "param.usupIdInsert",
+    "type": "java.lang.String",
+    "description": "A description for 'param.usupIdInsert'"
+  },
+  {
+    "name": "param.origen",
+    "type": "java.lang.String",
+    "description": "A description for 'param.origen'"
+  },
+  {
+    "name": "param.ciProductor",
+    "type": "java.lang.String",
+    "description": "A description for 'param.ciProductor'"
+  },
+  {
+    "name": "param.image1",
+    "type": "java.lang.String",
+    "description": "A description for 'param.image1'"
+  },
+  {
+    "name": "param.image2",
+    "type": "java.lang.String",
+    "description": "A description for 'param.image2'"
+  },
+  {
+    "name": "param.image3",
+    "type": "java.lang.String",
+    "description": "A description for 'param.image3'"
+  },
+  {
+    "name": "param.image4",
+    "type": "java.lang.String",
+    "description": "A description for 'param.image4'"
+  },
+  {
+    "name": "param.tmpFolder",
+    "type": "java.lang.String",
+    "description": "A description for 'param.tmpFolder'"
+  },
+  {
+    "name": "param,passwd",
+    "type": "java.lang.String",
+    "description": "A description for 'param,passwd'"
+  },
+  {
+    "name": "param.nameFolder",
+    "type": "java.lang.String",
+    "description": "A description for 'param.nameFolder'"
+  },
+  {
+    "name": "param.email",
+    "type": "java.lang.String",
+    "description": "A description for 'param.email'"
+  },
+  {
+    "name": "param.passwd",
+    "type": "java.lang.String",
+    "description": "A description for 'param.passwd'"
+  },
+  {
+    "name": "param.alfpass",
+    "type": "java.lang.String",
+    "description": "A description for 'param.alfpass'"
+  },
+  {
+    "name": "param.alfUser",
+    "type": "java.lang.String",
+    "description": "A description for 'param.alfUser'"
+  },
+  {
+    "name": "param.tmpFolder",
+    "type": "java.lang.String",
+    "description": "A description for 'param.tmpFolder'"
+  },
+  {
+    "name": "param.tmpFolder",
+    "type": "java.lang.String",
+    "description": "A description for 'param.tmpFolder'"
+  },
+  {
+    "name": "param.tmpFolder",
+    "type": "java.lang.String",
+    "description": "A description for 'param.tmpFolder'"
+  },
+  {
+    "name": "param.nameFolder",
+    "type": "java.lang.String",
+    "description": "A description for 'param.nameFolder'"
+  },
+  {
+    "name": "security.oauth2.resource.userInfoUri",
+    "type": "java.lang.String",
+    "description": "A description for 'security.oauth2.resource.userInfoUri'"
+  },
+  {
+    "name": "url.logonAlfresco",
+    "type": "java.lang.String",
+    "description": "A description for 'url.logonAlfresco'"
+  },
+  {
+    "name": "url.logonAlfresco",
+    "type": "java.lang.String",
+    "description": "A description for 'url.logonAlfresco'"
+  },
+  {
+    "name": "url.logonAlfresco",
+    "type": "java.lang.String",
+    "description": "A description for 'url.logonAlfresco'"
+  },
+  {
+    "name": "url.logonAlfresco",
+    "type": "java.lang.String",
+    "description": "A description for 'url.logonAlfresco'"
+  },
+  {
+    "name": "url.logonAlfresco",
+    "type": "java.lang.String",
+    "description": "A description for 'url.logonAlfresco'"
+  },
+  {
+    "name": "url.logonAlfresco",
+    "type": "java.lang.String",
+    "description": "A description for 'url.logonAlfresco'"
+  },
+  {
+    "name": "param.alfPass",
+    "type": "java.lang.String",
+    "description": "A description for 'param.alfPass'"
+  },
+  {
+    "name": "url.persona",
+    "type": "java.lang.String",
+    "description": "A description for 'url.persona'"
+  },
+  {
+    "name": "url.seguridades",
+    "type": "java.lang.String",
+    "description": "A description for 'url.seguridades'"
+  }
+]}
