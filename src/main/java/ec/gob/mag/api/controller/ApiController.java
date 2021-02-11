@@ -61,6 +61,7 @@ public class ApiController implements ErrorController {
 	/***************************************
 	 * SECCION - END-POINTS
 	 ***************************************/
+
 	@RequestMapping(value = "/cialco/findall", method = RequestMethod.GET)
 	@ApiOperation(value = "consumo de micro cialco", response = Object.class)
 	@ResponseStatus(HttpStatus.OK)
