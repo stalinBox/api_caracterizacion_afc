@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import ec.gob.mag.api.dto.PruebaDTO;
+
 import ec.gob.mag.api.util.Consumer;
 import ec.gob.mag.api.util.ConvertEntityUtil;
 import io.swagger.annotations.ApiOperation;
@@ -75,15 +75,15 @@ public class CialcoController implements ErrorController{
 	
 	
 	@PostMapping(value = "/create")
-	@ApiOperation(value = "Guarda un registro en la tabla prueba del esquema publico", response = Object.class)
+	@ApiOperation(value = "Guarda un registro en la tabla Cialco del esquema sc_afc", response = Object.class)
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<?> savePruebaPost(@Validated @RequestBody String prueba,
 			@RequestHeader(name = "Authorization") String auth) throws NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException, IOException {
 		String pathMicro = urlServidor + urlmicrocialco + "cialco/create/";
-		PruebaDTO pruebaDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicro, prueba, auth, PruebaDTO.class);
+		Object response = consumer.doGet(pathMicro, auth);
 		LOGGER.info("prueba/create");
-		return ResponseEntity.ok(pruebaDTO);
+		return ResponseEntity.ok(response);
 	}
 	
 	@Override
