@@ -22,6 +22,7 @@ public class ConvertEntityUtil {
 		String jsonString = null;
 		ObjectMapper mprObjecto = new ObjectMapper();
 		mprObjecto.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mprObjecto.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 		System.out.println("URL VALUE GET: " + pathMicro);
 		Object responseEntity = consumer.doGet(pathMicro, auth);
 		jsonString = mprObjecto.writeValueAsString(responseEntity);
@@ -34,6 +35,7 @@ public class ConvertEntityUtil {
 		String jsonString = null;
 		ObjectMapper mprObjecto = new ObjectMapper();
 		mprObjecto.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mprObjecto.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 		System.out.println("URL VALUE POST: " + pathMicro);
 		Object responseEntity = consumer.doPost(pathMicro, sendData, auth);
 		jsonString = mprObjecto.writeValueAsString(responseEntity);
@@ -45,6 +47,7 @@ public class ConvertEntityUtil {
 		String jsonString = null;
 		ObjectMapper mprObjecto = new ObjectMapper();
 		mprObjecto.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mprObjecto.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 		System.out.println("URL VALUE: " + pathMicro);
 		Object responseEntity = consumer.doGet(pathMicro, auth);
 		jsonString = mprObjecto.writeValueAsString(responseEntity);

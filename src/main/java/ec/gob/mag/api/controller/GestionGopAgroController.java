@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import ec.gob.mag.api.dto.PersonaDTO;
 import ec.gob.mag.api.util.Consumer;
 import ec.gob.mag.api.util.ConvertEntityUtil;
 import ec.gob.mag.api.util.Util;
@@ -30,16 +29,16 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@RequestMapping("/api/persona")
-@Api(value = "API CARACTERIZACION AFC", tags = "PERSONA")
+@RequestMapping("/api/gopagro")
+@Api(value = "API CARACTERIZACION AFC", tags = "GOP AGRO")
 @ApiResponses(value = { @ApiResponse(code = 200, message = "SUCESS"),
 		@ApiResponse(code = 404, message = "RESOURCE NOT FOUND"), @ApiResponse(code = 400, message = "BAD REQUEST"),
 		@ApiResponse(code = 201, message = "CREATED"), @ApiResponse(code = 401, message = "UNAUTHORIZED"),
 		@ApiResponse(code = 415, message = "UNSUPPORTED TYPE - Representation not supported for the resource"),
 		@ApiResponse(code = 500, message = "SERVER ERROR") })
-public class PersonaController implements ErrorController {
+public class GestionGopAgroController implements ErrorController {
 	private static final String PATH = "/error";
-	public static final Logger LOGGER = LoggerFactory.getLogger(PersonaController.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(GestionGopAgroController.class);
 
 	/***************************************
 	 * SECCION - INYECCION DE DEPENDENCIAS
@@ -62,8 +61,8 @@ public class PersonaController implements ErrorController {
 	@Value("${url.servidor_micro}")
 	private String urlServidor;
 
-	@Value("${url.persona}")
-	private String urlMicroPersona;
+	@Value("${url.gopagro}")
+	private String urlMicroGopAgro;
 
 	/***************************************
 	 * @throws IllegalAccessException
@@ -72,17 +71,30 @@ public class PersonaController implements ErrorController {
 	 * @throws NoSuchFieldException
 	 ***************************************/
 
-	@GetMapping(value = "/findById/{idRna}")
-	@ApiOperation(value = "Busca una persona por el id del Rna", response = Object.class)
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<?> findPersonaById(@PathVariable Long idRna,
+	@PostMapping(value = "/tipologiaNivel/create/")
+	@ApiOperation(value = "Guarda una tipologia", response = Object.class)
+	@ResponseStatus(HttpStatus.CREATED)
+	public ResponseEntity<?> saveTipologiaNivel(@RequestBody String data,
 			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
 			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroPersona + "persona/findById/" + idRna;
-		PersonaDTO personaDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicro, token, PersonaDTO.class);
-		LOGGER.info("/api/persona/findById/{idRna}" + " usuario: " + util.filterUsuId(token));
-		return ResponseEntity.ok(personaDTO);
+		pathMicro = urlServidor + urlMicroGopAgro + "tipologiaNivel/create/";
+		Object res = consumer.doPost(pathMicro, data, token);
+		LOGGER.info("/api/gopagro/tipologiaNivel/create/" + data + " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(res);
+	}
+
+	@PostMapping(value = "/cialcofertaprod/create/")
+	@ApiOperation(value = "Guarda una tipologia", response = Object.class)
+	@ResponseStatus(HttpStatus.CREATED)
+	public ResponseEntity<?> saveOfertaProductivaCialco(@RequestBody String data,
+			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
+			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String pathMicro = null;
+		pathMicro = urlServidor + urlMicroGopAgro + "cialcofertaprod/create/";
+		Object res = consumer.doPost(pathMicro, data, token);
+		LOGGER.info("/api/gopagro/cialcofertaprod/create/" + data + " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(res);
 	}
 
 	@Override

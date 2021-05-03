@@ -21,15 +21,17 @@ import org.springframework.web.bind.annotation.RestController;
 import ec.gob.mag.api.util.Consumer;
 import ec.gob.mag.api.util.ConvertEntityUtil;
 import ec.gob.mag.api.util.Util;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping("/api/ubicacion")
+@Api(value = "API CARACTERIZACION AFC", tags = "UBICACION")
 @ApiResponses(value = { @ApiResponse(code = 200, message = "SUCESS"),
 		@ApiResponse(code = 404, message = "RESOURCE NOT FOUND"), @ApiResponse(code = 400, message = "BAD REQUEST"),
-		@ApiResponse(code = 201, message = "CREATED"), @ApiResponse(code = 401, message = "UNtokenORIZED"),
+		@ApiResponse(code = 201, message = "CREATED"), @ApiResponse(code = 401, message = "UNAUTHORIZED"),
 		@ApiResponse(code = 415, message = "UNSUPPORTED TYPE - Representation not supported for the resource"),
 		@ApiResponse(code = 500, message = "SERVER ERROR") })
 public class UbicacionController implements ErrorController {
@@ -68,8 +70,9 @@ public class UbicacionController implements ErrorController {
 	@ApiOperation(value = "Get Ubicacion by ubiId", response = Object.class)
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<?> findOnlyFirstLevelByUbiId(@PathVariable Long ubiId,
-			@RequestHeader(name = "tokenorization") String token) {
+			@RequestHeader(name = "Authorization") String token) {
 		String pathMicro = urlServidor + urlMicroUbicacion + "api/ubicacion/findOnlyFirstLevelByUbiId/" + ubiId;
+		System.out.println("===>> " + pathMicro);
 		Object response = consumer.doGet(pathMicro, token);
 		LOGGER.info("ubicacion/findOnlyFirstLevelByUbiId/" + response + " usuario: " + util.filterUsuId(token));
 		return ResponseEntity.ok(response);
@@ -79,7 +82,7 @@ public class UbicacionController implements ErrorController {
 	@ApiOperation(value = "Get Ubicacion by ubiId", response = Object.class)
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<?> findChildrenByUbiId(@PathVariable Long ubiId,
-			@RequestHeader(name = "tokenorization") String token) throws NoSuchFieldException, SecurityException,
+			@RequestHeader(name = "Authorization") String token) throws NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException, IOException {
 
 		String pathMicro = urlServidor + urlMicroUbicacion + "api/ubicacion/findChildrenByUbiId/" + ubiId;
@@ -92,7 +95,7 @@ public class UbicacionController implements ErrorController {
 	@ApiOperation(value = "Obtener y validar la ubicacion por ubiId en las parroquias", response = Object.class)
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<?> findValidateUbicationParroquia(@PathVariable Long ubiId, @PathVariable Double xLong,
-			@PathVariable Double yLat, @RequestHeader(name = "tokenorization") String token) {
+			@PathVariable Double yLat, @RequestHeader(name = "Authorization") String token) {
 
 		String pathMicro = urlServidor + urlMicroUbicacion + "procedure/coordenada/findValidateUbicationParroquia/"
 				+ ubiId + "/" + xLong + "/" + yLat;
@@ -106,7 +109,7 @@ public class UbicacionController implements ErrorController {
 	@ApiOperation(value = "Obtener y validar la ubicacion por ubiId en los cantones", response = Object.class)
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<?> findValidateUbicationCanton(@PathVariable Long ubiId, @PathVariable Double xLong,
-			@PathVariable Double yLat, @RequestHeader(name = "tokenorization") String token) {
+			@PathVariable Double yLat, @RequestHeader(name = "Authorization") String token) {
 		String pathMicro = urlServidor + urlMicroUbicacion + "procedure/coordenada/findValidateUbicationCanton/" + ubiId
 				+ "/" + xLong + "/" + yLat;
 		Object response = consumer.doGet(pathMicro, token);
@@ -119,8 +122,9 @@ public class UbicacionController implements ErrorController {
 	@ApiOperation(value = "Get Ubicacion by ubiId", response = Object.class)
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<?> findUbicacionByUbiId(@PathVariable Long ubiId,
-			@RequestHeader(name = "tokenorization") String token) {
+			@RequestHeader(name = "Authorization") String token) {
 		String pathMicro = urlServidor + urlMicroUbicacion + "api/ubicacion/findByUbiId/" + ubiId;
+		System.out.println("===>" + pathMicro);
 		Object response = consumer.doGet(pathMicro, token);
 		LOGGER.info("ubicacion/findByUbiId/" + ubiId + response + " usuario: " + util.filterUsuId(token));
 		return ResponseEntity.ok(response);

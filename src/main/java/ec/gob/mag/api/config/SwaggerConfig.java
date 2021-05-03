@@ -26,8 +26,8 @@ public class SwaggerConfig {
 	@SuppressWarnings("unused")
 	private ApiInfo getApiInfo() {
 		Contact contact = new Contact("DSII", "http://nodisponible.com", "none");
-		return new ApiInfoBuilder().title("EJEMPLO TITULO API").description("DEFINICION API EJEMPLO").version("1.0.0")
-				.license("Apache 2.0").licenseUrl("http://www.apache.org/licenses/LICENSE-2.0").contact(contact)
-				.build();
+		return new ApiInfoBuilder().title("API CARACTERIZACION AFX").description("Servicios para el sistema de afc")
+				.version("1.0.0").license("Apache 2.0").licenseUrl("http://www.apache.org/licenses/LICENSE-2.0")
+				.contact(contact).build();
 	}
 }
