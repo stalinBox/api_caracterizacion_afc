@@ -81,7 +81,7 @@ public class CatalogosController implements ErrorController {
 			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
 			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroCatalogos + "api/catalogo/findByIdTipoCatalogo/" + id;
+		pathMicro = urlServidor + urlMicroCatalogos + "api/catalogo/findCatalogosByTipo/" + id;
 		List<CatalogoDTO> catalogos = (List<CatalogoDTO>) convertEntityUtil.ConvertListEntity(pathMicro, token,
 				CatalogoDTO.class);
 
