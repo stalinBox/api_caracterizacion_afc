@@ -93,15 +93,16 @@ public class OrganizacionController implements ErrorController {
 		String pathMicroUbicacion = null;
 		pathMicroUbicacion = urlServidor + urlMicroUbicacion + "api/ubicacion/findByUbiId/" + organizacion.getUbiId();
 
-		System.out.println("--->" + pathMicroUbicacion);
-
 		UbicacionDTO ubicacionDTO = null;
 		try {
 			ubicacionDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroUbicacion, token, UbicacionDTO.class);
+			organizacion.setParroquia(ubicacionDTO.getUbiNombre());
+			organizacion.setCanton(ubicacionDTO.getUbicacionDTO().getUbiNombre());
+			organizacion.setProvincia(ubicacionDTO.getUbicacionDTO().getUbicacionDTO().getUbiNombre());
+			organizacion.setPais(ubicacionDTO.getUbicacionDTO().getUbicacionDTO().getUbicacionDTO().getUbiNombre());
 		} catch (Exception e) {
-			e.printStackTrace();
+			ubicacionDTO = null;
 		}
-		organizacion.setUbicacion(ubicacionDTO);
 
 		LOGGER.info("/api/persona/findById/" + idOrg + " usuario: " + util.filterUsuId(token));
 		return ResponseEntity.ok(organizacion);

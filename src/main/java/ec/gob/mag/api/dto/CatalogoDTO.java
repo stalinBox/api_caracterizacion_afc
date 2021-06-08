@@ -2,6 +2,8 @@ package ec.gob.mag.api.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.Transient;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -36,5 +38,10 @@ public class CatalogoDTO {
 	@ApiModelProperty(value = "Identificativo del Catalogo")
 	@JsonProperty("catIdentificativo")
 	private String catIdentificativo;
+
+	private Integer tipcatIdHijo;
+
+	@Transient
+	private ImagenCatalogoDTO imagenCatalogo;
 
 }

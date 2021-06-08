@@ -219,8 +219,25 @@ public class OrganizacionDTO implements Serializable {
 	@JsonProperty("orgCordLongitud")
 	private String orgCordLongitud;
 
+//	@Transient
+//	@JsonProperty("ubicacion")
+//	@ApiModelProperty(value = "Ubicacion completa", notes = "Estado SRI de la Sociedad", position = 23)
+//	private UbicacionDTO ubicacion;
+
 	@Transient
-	@JsonProperty("ubicacion")
-	private UbicacionDTO ubicacion;
+	@ApiModelProperty(value = "pais de la organizacion", position = 40)
+	private String pais;
+
+	@Transient
+	@ApiModelProperty(value = "provincia de la organizacion", position = 41)
+	private String provincia;
+
+	@Transient
+	@ApiModelProperty(value = "canton de la organizacion", position = 42)
+	private String canton;
+
+	@Transient
+	@ApiModelProperty(value = "parroquia de la organizacion", position = 43)
+	private String parroquia;
 }
 //ok

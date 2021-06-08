@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import ec.gob.mag.api.dto.CatalogoDTO;
+import ec.gob.mag.api.dto.ImagenCatalogoDTO;
 import ec.gob.mag.api.util.Consumer;
 import ec.gob.mag.api.util.ConvertEntityUtil;
 import ec.gob.mag.api.util.Util;
@@ -101,6 +102,21 @@ public class CatalogosController implements ErrorController {
 		List<CatalogoDTO> catalogos = (List<CatalogoDTO>) convertEntityUtil.ConvertListEntity(pathMicro, token,
 				CatalogoDTO.class);
 		LOGGER.info("api/catalogo/findByCatIdHijo/" + catIdHijo + " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(catalogos);
+	}
+
+	@SuppressWarnings("unchecked")
+	@GetMapping(value = "/imagen/findCatId/{catId}")
+	@ApiOperation(value = "Busca un catalogo por el catCodigo y el tipo de catalogo", response = Object.class)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> imagefindById(@PathVariable Integer catId,
+			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
+			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String pathMicro = null;
+		pathMicro = urlServidor + urlMicroCatalogos + "imagen/findCatId/" + catId;
+		List<ImagenCatalogoDTO> catalogos = (List<ImagenCatalogoDTO>) convertEntityUtil.ConvertListEntity(pathMicro,
+				token, ImagenCatalogoDTO.class);
+		LOGGER.info("/api/catalogos/imagen/findCatId/" + catId + " usuario: " + util.filterUsuId(token));
 		return ResponseEntity.ok(catalogos);
 	}
 
