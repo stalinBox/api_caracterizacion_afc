@@ -39,8 +39,6 @@ public class CatalogoDTO {
 	@JsonProperty("catIdentificativo")
 	private String catIdentificativo;
 
-	private Integer tipcatIdHijo;
-
 	@Transient
 	private ImagenCatalogoDTO imagenCatalogo;
 

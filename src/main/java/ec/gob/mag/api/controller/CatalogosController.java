@@ -21,7 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import ec.gob.mag.api.dto.CatalogoDTO;
+//import ec.gob.mag.api.dto.CatalogoDTO;
+import ec.gob.mag.api.dto.CatalogoRecursiveDTO;
 import ec.gob.mag.api.dto.ImagenCatalogoDTO;
 import ec.gob.mag.api.util.Consumer;
 import ec.gob.mag.api.util.ConvertEntityUtil;
@@ -74,34 +75,34 @@ public class CatalogosController implements ErrorController {
 	 * @throws NoSuchFieldException
 	 ***************************************/
 
-	@SuppressWarnings("unchecked")
-	@GetMapping(value = "/findByIdTipoCatalogo/{id}")
-	@ApiOperation(value = "Busca una organizacion por id", response = Object.class)
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<?> findTipoCatalogosId(@PathVariable Long id,
-			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
-			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroCatalogos + "api/catalogo/findCatalogosByTipo/" + id;
-		List<CatalogoDTO> catalogos = (List<CatalogoDTO>) convertEntityUtil.ConvertListEntity(pathMicro, token,
-				CatalogoDTO.class);
+//	@SuppressWarnings("unchecked")
+//	@GetMapping(value = "/findByIdTipoCatalogo/{id}")
+//	@ApiOperation(value = "Busca una organizacion por id", response = Object.class)
+//	@ResponseStatus(HttpStatus.OK)
+//	public ResponseEntity<?> findTipoCatalogosId(@PathVariable Long id,
+//			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
+//			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+//		String pathMicro = null;
+//		pathMicro = urlServidor + urlMicroCatalogos + "api/catalogo/findCatalogosByTipo/" + id;
+//		List<CatalogoDTO> catalogos = (List<CatalogoDTO>) convertEntityUtil.ConvertListEntity(pathMicro, token,
+//				CatalogoDTO.class);
+//
+//		LOGGER.info("catalogo/findByIdTipoCatalogo/" + id + " usuario: " + util.filterUsuId(token));
+//		return ResponseEntity.ok(catalogos);
+//	}
 
-		LOGGER.info("catalogo/findByIdTipoCatalogo/" + id + " usuario: " + util.filterUsuId(token));
-		return ResponseEntity.ok(catalogos);
-	}
-
 	@SuppressWarnings("unchecked")
-	@GetMapping(value = "/findByCatIdHijo/{catIdHijo}")
+	@GetMapping(value = "/findCatalogosByTipoRecursive/{catIdHijo}")
 	@ApiOperation(value = "Busca un catalogo por el catCodigo y el tipo de catalogo", response = Object.class)
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<?> findByCatCodigo(@PathVariable Long catIdHijo,
 			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
 			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroCatalogos + "api/catalogo/findByCatIdHijo/" + catIdHijo;
-		List<CatalogoDTO> catalogos = (List<CatalogoDTO>) convertEntityUtil.ConvertListEntity(pathMicro, token,
-				CatalogoDTO.class);
-		LOGGER.info("api/catalogo/findByCatIdHijo/" + catIdHijo + " usuario: " + util.filterUsuId(token));
+		pathMicro = urlServidor + urlMicroCatalogos + "api/catalogo/findCatalogosByTipoRecursive/" + catIdHijo;
+		List<CatalogoRecursiveDTO> catalogos = (List<CatalogoRecursiveDTO>) convertEntityUtil
+				.ConvertListEntity(pathMicro, token, CatalogoRecursiveDTO.class);
+		LOGGER.info("api/catalogo/findCatalogosByTipoRecursive/" + catIdHijo + " usuario: " + util.filterUsuId(token));
 		return ResponseEntity.ok(catalogos);
 	}
 
