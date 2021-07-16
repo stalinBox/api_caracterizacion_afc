@@ -24,11 +24,11 @@ public class CatalogoRecursiveDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	private Integer catIdHijo;
 	private Integer tipcatIdHijo;
-
 	private Integer tipCatId;
 	private String tipCatDescripcion;
 	private Integer catIdPadre;
-	private Integer catIdHijo;
-	private String catNombre;
+	private String catNombrePadre;
+	private String catNombreHijo;
 }
