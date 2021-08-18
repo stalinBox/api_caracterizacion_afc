@@ -110,6 +110,7 @@ public class Consumer {
 			conn.setRequestMethod("GET");
 			conn.setRequestProperty("Accept", "application/json");
 			conn.setRequestProperty("Authorization", accessToken);
+//			conn.
 			if (conn.getResponseCode() != 200) {
 				String responseError = readerInputStream(conn.getErrorStream());
 				ExceptionResponse objectErrorResponse = convertStringToErrorObject(responseError);

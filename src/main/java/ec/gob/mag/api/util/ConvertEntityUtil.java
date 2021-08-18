@@ -54,4 +54,14 @@ public class ConvertEntityUtil {
 		return mprObjecto.readValue(jsonString, mprObjecto.getTypeFactory().constructCollectionType(List.class, clazz));
 	}
 
+	public <T> T ConvertListEntity(Class<T> clazz, Object responseEntity) throws IOException, NoSuchFieldException,
+			SecurityException, IllegalArgumentException, IllegalAccessException {
+		String jsonString = null;
+		ObjectMapper mprObjecto = new ObjectMapper();
+		mprObjecto.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mprObjecto.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+		jsonString = mprObjecto.writeValueAsString(responseEntity);
+		return mprObjecto.readValue(jsonString, mprObjecto.getTypeFactory().constructCollectionType(List.class, clazz));
+	}
+
 }

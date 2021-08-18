@@ -2,6 +2,8 @@ package ec.gob.mag.api.controller;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,13 +88,10 @@ public class OrganizacionController implements ErrorController {
 			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		String pathMicro = null;
 		pathMicro = urlServidor + urlMicroOrganizacion + "organizacion/findById/" + idOrg;
-
 		OrganizacionDTO organizacion = convertEntityUtil.ConvertSingleEntityGET(pathMicro, token,
 				OrganizacionDTO.class);
-
 		String pathMicroUbicacion = null;
 		pathMicroUbicacion = urlServidor + urlMicroUbicacion + "api/ubicacion/findByUbiId/" + organizacion.getUbiId();
-
 		UbicacionDTO ubicacionDTO = null;
 		try {
 			ubicacionDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroUbicacion, token, UbicacionDTO.class);
@@ -103,9 +102,36 @@ public class OrganizacionController implements ErrorController {
 		} catch (Exception e) {
 			ubicacionDTO = null;
 		}
-
 		LOGGER.info("/api/persona/findById/" + idOrg + " usuario: " + util.filterUsuId(token));
 		return ResponseEntity.ok(organizacion);
+	}
+
+	@GetMapping(value = "/afc/findAllPaged/")
+	@ApiOperation(value = "Busca una organizacion afc", response = Object.class)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> findOrganizacionAFCPaged(HttpServletRequest request,
+			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
+			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String pathMicro = null;
+		pathMicro = urlServidor + urlMicroOrganizacion + "/organizacionAFC/findAllPaginated/?"
+				+ request.getQueryString();
+		Object resp = consumer.doGet(pathMicro, token);
+		LOGGER.info("/api/organizacionAFC/findByAFCPaged/ " + "usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(resp);
+	}
+
+	@GetMapping(value = "/centroAcopio/findAllByOrgIdPaged/{orgid}/")
+	@ApiOperation(value = "Busca una cialco por id", response = Object.class)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> cialcofindAllPaginated(@PathVariable Long orgid, HttpServletRequest request,
+			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
+			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String pathMicro = null;
+		pathMicro = urlServidor + urlMicroOrganizacion + "centroAcopio/findAllByOrgIdPaged/" + orgid + "/?"
+				+ request.getQueryString();
+		Object res = consumer.doGet(pathMicro, token);
+		LOGGER.info("/centroAcopio/findAllByOrgIdPaged/" + " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(res);
 	}
 
 	@PostMapping(value = "/centroAcopio/create/")
