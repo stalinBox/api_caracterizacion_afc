@@ -1,11 +1,8 @@
 package ec.gob.mag.api.controller;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +30,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ec.gob.mag.api.dto.CatalogoDTO;
 import ec.gob.mag.api.dto.CialcoDTO;
+import ec.gob.mag.api.dto.CialcoOfertaProductivaDTO;
+import ec.gob.mag.api.dto.FuncionamientoCialcoDTO;
 import ec.gob.mag.api.dto.UbicacionDTO;
 import ec.gob.mag.api.util.Consumer;
 import ec.gob.mag.api.util.ConvertEntityUtil;
@@ -117,6 +116,110 @@ public class GestionGopAgroController implements ErrorController {
 		return ResponseEntity.ok(res);
 	}
 
+	// *** PAGINADOS
+	@SuppressWarnings("unchecked")
+	@GetMapping(value = "/cialcofertaprod/findAllPaginated/{ciaId}")
+	@ApiOperation(value = "Busca una cialco por id", response = Object.class)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> cialcoOfertaProductivafindAllPaginated(@PathVariable Long ciaId,
+			HttpServletRequest request, @RequestHeader(name = "Authorization") String token)
+			throws JsonParseException, JsonMappingException, IOException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException {
+		String pathMicro = null;
+		pathMicro = urlServidor + urlMicroGopAgro + "cialcofertaprod/findAllPaginated/" + ciaId + "/?"
+				+ request.getQueryString();
+		Object res = consumer.doGet(pathMicro, token);
+
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, Object> map = mapper.convertValue(res, Map.class);
+
+		List<CialcoOfertaProductivaDTO> cialco_oferta_p = (List<CialcoOfertaProductivaDTO>) convertEntityUtil
+				.ConvertListEntity(CialcoOfertaProductivaDTO.class, map.get("data"));
+
+		cialco_oferta_p = cialco_oferta_p.stream().map(mpr -> {
+			String pathMicroCatalogos = null;
+			CatalogoDTO catalogosDTO = null;
+			try {
+				pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+						+ mpr.getCiop_cat_id_oferta();
+				catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
+				mpr.setNombre_ciop_cat_id_oferta(catalogosDTO.getCatNombre());
+			} catch (Exception e) {
+				catalogosDTO = null;
+			}
+
+			return mpr;
+		}).collect(Collectors.toList());
+
+		map.replace("data", cialco_oferta_p);
+		Object map2 = mapper.convertValue(map, Object.class);
+		LOGGER.info("/cialcofertaprod/findAllPaginated/{ciaId}" + " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(map2);
+	}
+
+	@SuppressWarnings("unchecked")
+	@GetMapping(value = "/funcionamientocialco/findAllPaginated/{ciaId}")
+	@ApiOperation(value = "Busca una cialco por id", response = Object.class)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> funcionamientoCialcoPaginated(@PathVariable Long ciaId, HttpServletRequest request,
+			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
+			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String pathMicro = null;
+		pathMicro = urlServidor + urlMicroGopAgro + "funcionamientocialco/findAllPaginated/" + ciaId + "/?"
+				+ request.getQueryString();
+		Object res = consumer.doGet(pathMicro, token);
+
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, Object> map = mapper.convertValue(res, Map.class);
+
+		List<FuncionamientoCialcoDTO> f_cialco = (List<FuncionamientoCialcoDTO>) convertEntityUtil
+				.ConvertListEntity(FuncionamientoCialcoDTO.class, map.get("data"));
+
+		f_cialco = f_cialco.stream().map(mpr -> {
+			String pathMicroCatalogos = null;
+			String pathMicroCatalogosHInicio = null;
+			String pathMicroCatalogosHFin = null;
+			CatalogoDTO catalogosDTO = null;
+			CatalogoDTO catalogosDTOHoraInicio = null;
+			CatalogoDTO catalogosDTOHoraFin = null;
+
+			try {
+				pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+						+ mpr.getFcia_id_cat_dia_funcionamiento();
+				catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
+
+				mpr.setNombre_cat_dia_funcionamiento(catalogosDTO.getCatNombre());
+			} catch (Exception e) {
+				catalogosDTO = null;
+			}
+
+			try {
+				pathMicroCatalogosHInicio = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+						+ mpr.getFcia_id_cat_hora_inicio();
+				catalogosDTOHoraInicio = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogosHInicio, token,
+						CatalogoDTO.class);
+				mpr.setNombre_fcia_id_cat_hora_inicio(catalogosDTOHoraInicio.getCatNombre());
+			} catch (Exception e) {
+				catalogosDTOHoraInicio = null;
+			}
+
+			try {
+				pathMicroCatalogosHFin = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+						+ mpr.getFcia_id_cat_hora_fin();
+				catalogosDTOHoraFin = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogosHFin, token,
+						CatalogoDTO.class);
+				mpr.setNombre_fcia_id_cat_hora_fin(catalogosDTOHoraFin.getCatNombre());
+			} catch (Exception e) {
+				catalogosDTOHoraFin = null;
+			}
+			return mpr;
+		}).collect(Collectors.toList());
+		map.replace("data", f_cialco);
+		Object map2 = mapper.convertValue(map, Object.class);
+		LOGGER.info("/funcionamientocialco/findAllPaginated/" + " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(map2);
+	}
+
 	@SuppressWarnings("unchecked")
 	@GetMapping(value = "/cialco/findAllPaged/")
 	@ApiOperation(value = "Busca una cialco por id", response = Object.class)
@@ -130,10 +233,6 @@ public class GestionGopAgroController implements ErrorController {
 
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String, Object> map = mapper.convertValue(res, Map.class);
-
-//		List<CialcoDTO> cialco = new ArrayList<CialcoDTO>();
-//		System.out.println("2 solo data: " + map.containsKey("data"));
-//		System.out.println("3 solo data: " + map.get("data"));
 
 		List<CialcoDTO> cialco = (List<CialcoDTO>) convertEntityUtil.ConvertListEntity(CialcoDTO.class,
 				map.get("data"));
@@ -167,11 +266,6 @@ public class GestionGopAgroController implements ErrorController {
 
 		map.replace("data", cialco);
 		Object map2 = mapper.convertValue(map, Object.class);
-//		cialco.stream().forEach(mpr -> System.out.println("parroquia: " + mpr.getNombre_parroquia()));
-//		cialco.stream().forEach(mpr -> System.out.println("canton: " + mpr.getNombre_canton()));
-//		cialco.stream().forEach(mpr -> System.out.println("provincia: " + mpr.getNombre_provincia()));
-//		cialco.stream().forEach(mpr -> System.out.println(mpr.getNombre_cio_oferta()));
-
 		LOGGER.info("/cialco/findAllPaginated/" + " usuario: " + util.filterUsuId(token));
 		return ResponseEntity.ok(map2);
 	}
