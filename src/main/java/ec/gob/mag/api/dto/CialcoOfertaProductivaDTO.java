@@ -18,6 +18,7 @@ import lombok.Setter;
 public class CialcoOfertaProductivaDTO {
 
 	@Id
+	private Integer nro;
 	private Long ciop_id;
 	private Integer cia_id;
 	private String cia_nombre;

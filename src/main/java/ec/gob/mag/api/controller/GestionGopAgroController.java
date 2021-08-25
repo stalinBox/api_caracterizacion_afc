@@ -240,10 +240,11 @@ public class GestionGopAgroController implements ErrorController {
 		cialco = cialco.stream().map(mpr -> {
 			String pathMicroUbicacion = null;
 			String pathMicroCatalogos = null;
-			pathMicroUbicacion = urlServidor + urlMicroUbicacion + "api/ubicacion/findByUbiId/"
-					+ mpr.getUbi_id_parroquia();
-			UbicacionDTO ubicacionDTO = null;
 			CatalogoDTO catalogosDTO = null;
+			UbicacionDTO ubicacionDTO = null;
+//			UbicacionDTO ubicacionCantonDTO = null;
+//			UbicacionDTO ubicacionProvDTO = null;
+
 			try {
 				pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
 						+ mpr.getCiop_cat_id_oferta();
@@ -252,15 +253,37 @@ public class GestionGopAgroController implements ErrorController {
 			} catch (Exception e) {
 				catalogosDTO = null;
 			}
-
+			// SETTEAR NOMBRE PARROQUIA
 			try {
+				ubicacionDTO = null;
+				pathMicroUbicacion = urlServidor + urlMicroUbicacion + "api/ubicacion/findByUbiId/"
+						+ mpr.getUbi_id_parroquia();
 				ubicacionDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroUbicacion, token, UbicacionDTO.class);
 				mpr.setNombre_parroquia(ubicacionDTO.getUbiNombre());
-				mpr.setNombre_canton(ubicacionDTO.getUbicacionDTO().getUbiNombre());
-				mpr.setNombre_provincia(ubicacionDTO.getUbicacionDTO().getUbicacionDTO().getUbiNombre());
 			} catch (Exception e) {
 				ubicacionDTO = null;
 			}
+			// SETTEAR NOMBRE CANTON
+			try {
+				ubicacionDTO = null;
+				pathMicroUbicacion = urlServidor + urlMicroUbicacion + "api/ubicacion/findByUbiId/"
+						+ mpr.getUbi_id_canton();
+				ubicacionDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroUbicacion, token, UbicacionDTO.class);
+				mpr.setNombre_canton(ubicacionDTO.getUbiNombre());
+			} catch (Exception e) {
+				ubicacionDTO = null;
+			}
+			// SETTEAR NOMBRE PROVINCIA
+			try {
+				ubicacionDTO = null;
+				pathMicroUbicacion = urlServidor + urlMicroUbicacion + "api/ubicacion/findByUbiId/"
+						+ mpr.getUbi_id_provincia();
+				ubicacionDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroUbicacion, token, UbicacionDTO.class);
+				mpr.setNombre_provincia(ubicacionDTO.getUbiNombre());
+			} catch (Exception e) {
+				ubicacionDTO = null;
+			}
+
 			return mpr;
 		}).collect(Collectors.toList());
 

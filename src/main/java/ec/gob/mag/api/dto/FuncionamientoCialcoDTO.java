@@ -18,6 +18,7 @@ import lombok.Setter;
 public class FuncionamientoCialcoDTO {
 
 	@Id
+	private Integer nro;
 	private Long fcia_id;
 	private Long cia_id;
 	private String cia_nombre;

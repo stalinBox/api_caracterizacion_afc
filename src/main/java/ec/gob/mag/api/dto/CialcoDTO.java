@@ -18,7 +18,10 @@ import lombok.Setter;
 public class CialcoDTO {
 
 	@Id
+	private Integer nro;
 	private Long cia_id;
+	private Integer ubi_id_provincia;
+	private Integer ubi_id_canton;
 	private Integer ubi_id_parroquia;
 	private Integer org_id;
 	private Integer soc_id;
@@ -40,7 +43,7 @@ public class CialcoDTO {
 	private String cia_cord_zona;
 	private String cia_cord_latitud;
 	private String cia_cord_longitud;
-	private String cia_estado_negocio;
+	private Integer cia_estado_negocio;
 	private String cia_negocio_observacion;
 	private Integer ciop_cat_id_oferta;
 
