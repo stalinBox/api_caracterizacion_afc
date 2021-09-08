@@ -124,7 +124,6 @@ public class UbicacionController implements ErrorController {
 	public ResponseEntity<?> findUbicacionByUbiId(@PathVariable Long ubiId,
 			@RequestHeader(name = "Authorization") String token) {
 		String pathMicro = urlServidor + urlMicroUbicacion + "api/ubicacion/findByUbiId/" + ubiId;
-		System.out.println("===>" + pathMicro);
 		Object response = consumer.doGet(pathMicro, token);
 		LOGGER.info("ubicacion/findByUbiId/" + ubiId + response + " usuario: " + util.filterUsuId(token));
 		return ResponseEntity.ok(response);

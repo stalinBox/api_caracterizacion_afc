@@ -47,9 +47,9 @@ public class CialcoDTO {
 	private String cia_negocio_observacion;
 	private Integer ciop_cat_id_oferta;
 
-	private String nombre_parroquia;
-	private String nombre_canton;
-	private String nombre_provincia;
+	private String parroquia;
+	private String canton;
+	private String provincia;
 	private String nombre_cio_oferta;
 	private Boolean cia_eliminado;
 	private Integer cia_estado;

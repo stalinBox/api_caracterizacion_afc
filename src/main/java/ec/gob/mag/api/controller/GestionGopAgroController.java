@@ -29,7 +29,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ec.gob.mag.api.dto.CatalogoDTO;
+import ec.gob.mag.api.dto.Cialco;
 import ec.gob.mag.api.dto.CialcoDTO;
+import ec.gob.mag.api.dto.CialcoOfertaProductiva;
 import ec.gob.mag.api.dto.CialcoOfertaProductivaDTO;
 import ec.gob.mag.api.dto.FuncionamientoCialcoDTO;
 import ec.gob.mag.api.dto.UbicacionDTO;
@@ -242,8 +244,6 @@ public class GestionGopAgroController implements ErrorController {
 			String pathMicroCatalogos = null;
 			CatalogoDTO catalogosDTO = null;
 			UbicacionDTO ubicacionDTO = null;
-//			UbicacionDTO ubicacionCantonDTO = null;
-//			UbicacionDTO ubicacionProvDTO = null;
 
 			try {
 				pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
@@ -259,7 +259,7 @@ public class GestionGopAgroController implements ErrorController {
 				pathMicroUbicacion = urlServidor + urlMicroUbicacion + "api/ubicacion/findByUbiId/"
 						+ mpr.getUbi_id_parroquia();
 				ubicacionDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroUbicacion, token, UbicacionDTO.class);
-				mpr.setNombre_parroquia(ubicacionDTO.getUbiNombre());
+				mpr.setParroquia(ubicacionDTO.getUbiNombre());
 			} catch (Exception e) {
 				ubicacionDTO = null;
 			}
@@ -269,7 +269,7 @@ public class GestionGopAgroController implements ErrorController {
 				pathMicroUbicacion = urlServidor + urlMicroUbicacion + "api/ubicacion/findByUbiId/"
 						+ mpr.getUbi_id_canton();
 				ubicacionDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroUbicacion, token, UbicacionDTO.class);
-				mpr.setNombre_canton(ubicacionDTO.getUbiNombre());
+				mpr.setCanton(ubicacionDTO.getUbiNombre());
 			} catch (Exception e) {
 				ubicacionDTO = null;
 			}
@@ -279,7 +279,7 @@ public class GestionGopAgroController implements ErrorController {
 				pathMicroUbicacion = urlServidor + urlMicroUbicacion + "api/ubicacion/findByUbiId/"
 						+ mpr.getUbi_id_provincia();
 				ubicacionDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroUbicacion, token, UbicacionDTO.class);
-				mpr.setNombre_provincia(ubicacionDTO.getUbiNombre());
+				mpr.setProvincia(ubicacionDTO.getUbiNombre());
 			} catch (Exception e) {
 				ubicacionDTO = null;
 			}
@@ -293,19 +293,6 @@ public class GestionGopAgroController implements ErrorController {
 		return ResponseEntity.ok(map2);
 	}
 
-	@GetMapping(value = "/cialco/findAll")
-	@ApiOperation(value = "Busca una cialco por id", response = Object.class)
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<?> cialcofindAll(@RequestHeader(name = "Authorization") String token)
-			throws JsonParseException, JsonMappingException, IOException, NoSuchFieldException, SecurityException,
-			IllegalArgumentException, IllegalAccessException {
-		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroGopAgro + "cialco/findAll";
-		Object res = consumer.doGet(pathMicro, token);
-		LOGGER.info("/cialco/findAll/" + " usuario: " + util.filterUsuId(token));
-		return ResponseEntity.ok(res);
-	}
-
 	@GetMapping(value = "/cialco/findById/{id}")
 	@ApiOperation(value = "Busca una cialco por id", response = Object.class)
 	@ResponseStatus(HttpStatus.OK)
@@ -314,22 +301,43 @@ public class GestionGopAgroController implements ErrorController {
 			IllegalArgumentException, IllegalAccessException {
 		String pathMicro = null;
 		pathMicro = urlServidor + urlMicroGopAgro + "cialco/findById/" + id;
-		Object res = consumer.doGet(pathMicro, token);
-		LOGGER.info("/cialco/findById/" + id + " usuario: " + util.filterUsuId(token));
-		return ResponseEntity.ok(res);
-	}
+		String pathMicroUbicacion = null;
+		UbicacionDTO ubicacionDTO = null;
 
-	@GetMapping(value = "/cialcofertaprod/findAll")
-	@ApiOperation(value = "Busca una cialcofertaprod por id", response = Object.class)
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<?> cialcofertaprodfindAll(@RequestHeader(name = "Authorization") String token)
-			throws JsonParseException, JsonMappingException, IOException, NoSuchFieldException, SecurityException,
-			IllegalArgumentException, IllegalAccessException {
-		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroGopAgro + "cialcofertaprod/findAll";
-		Object res = consumer.doGet(pathMicro, token);
-		LOGGER.info("/cialcofertaprod/findAll/" + " usuario: " + util.filterUsuId(token));
-		return ResponseEntity.ok(res);
+		Cialco cialco = convertEntityUtil.ConvertSingleEntityGET(pathMicro, token, Cialco.class);
+		// SETTEAR NOMBRE PARROQUIA
+		try {
+			ubicacionDTO = null;
+			pathMicroUbicacion = urlServidor + urlMicroUbicacion + "api/ubicacion/findByUbiId/"
+					+ cialco.getUbiIdParroquia();
+			ubicacionDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroUbicacion, token, UbicacionDTO.class);
+			cialco.setParroquia(ubicacionDTO.getUbiNombre());
+		} catch (Exception e) {
+			ubicacionDTO = null;
+		}
+		// SETTEAR NOMBRE CANTON
+		try {
+			ubicacionDTO = null;
+			pathMicroUbicacion = urlServidor + urlMicroUbicacion + "api/ubicacion/findByUbiId/"
+					+ cialco.getUbiIdCanton();
+			ubicacionDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroUbicacion, token, UbicacionDTO.class);
+			cialco.setCanton(ubicacionDTO.getUbiNombre());
+		} catch (Exception e) {
+			ubicacionDTO = null;
+		}
+		// SETTEAR NOMBRE PROVINCIA
+		try {
+			ubicacionDTO = null;
+			pathMicroUbicacion = urlServidor + urlMicroUbicacion + "api/ubicacion/findByUbiId/"
+					+ cialco.getUbiIdProvincia();
+			ubicacionDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroUbicacion, token, UbicacionDTO.class);
+			cialco.setProvincia(ubicacionDTO.getUbiNombre());
+		} catch (Exception e) {
+			ubicacionDTO = null;
+		}
+
+		LOGGER.info("/cialco/findById/" + id + " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(cialco);
 	}
 
 	@GetMapping(value = "/cialcofertaprod/findById/{id}")
@@ -339,10 +347,25 @@ public class GestionGopAgroController implements ErrorController {
 			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
 			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		String pathMicro = null;
+		String pathMicroCatalogos = null;
+
 		pathMicro = urlServidor + urlMicroGopAgro + "cialcofertaprod/findById/" + id;
-		Object res = consumer.doGet(pathMicro, token);
+		CatalogoDTO catalogosDTO = null;
+		CialcoOfertaProductiva ciofprod = convertEntityUtil.ConvertSingleEntityGET(pathMicro, token,
+				CialcoOfertaProductiva.class);
+
+		try {
+			pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+					+ ciofprod.getCiopCatIdOferta();
+
+			catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
+			ciofprod.setNombre_cio_oferta(catalogosDTO.getCatNombre());
+		} catch (Exception e) {
+			catalogosDTO = null;
+		}
+
 		LOGGER.info("/cialcofertaprod/findById/" + id + " usuario: " + util.filterUsuId(token));
-		return ResponseEntity.ok(res);
+		return ResponseEntity.ok(ciofprod);
 	}
 
 	@Override
