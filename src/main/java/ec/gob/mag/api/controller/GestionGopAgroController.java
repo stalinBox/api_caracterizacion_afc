@@ -1,8 +1,10 @@
 package ec.gob.mag.api.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +35,7 @@ import ec.gob.mag.api.dto.Cialco;
 import ec.gob.mag.api.dto.CialcoDTO;
 import ec.gob.mag.api.dto.CialcoOfertaProductiva;
 import ec.gob.mag.api.dto.CialcoOfertaProductivaDTO;
+import ec.gob.mag.api.dto.FuncionamientoCialco;
 import ec.gob.mag.api.dto.FuncionamientoCialcoDTO;
 import ec.gob.mag.api.dto.UbicacionDTO;
 import ec.gob.mag.api.util.Consumer;
@@ -150,6 +153,84 @@ public class GestionGopAgroController implements ErrorController {
 				catalogosDTO = null;
 			}
 
+			List<FuncionamientoCialco> funcionamientoDTO = null;
+			String pathMicroFuncionamiento = null;
+			try {
+				pathMicroFuncionamiento = urlServidor + urlMicroGopAgro + "funcionamientocialco/findByCiaId/"
+						+ mpr.getCia_id();
+				funcionamientoDTO = (List<FuncionamientoCialco>) convertEntityUtil
+						.ConvertListEntity(pathMicroFuncionamiento, token, FuncionamientoCialco.class);
+				mpr.setFuncionamientoCialco(funcionamientoDTO);
+			} catch (Exception e) {
+				funcionamientoDTO = null;
+			}
+
+			// ADD FUNCIONAMIENTO ENTITY
+			funcionamientoDTO.stream().map(mprFuncionamiento -> {
+				String pathMicroCatalogosFun = null;
+				String pathMicroCatalogosHInicio = null;
+				String pathMicroCatalogosHFin = null;
+				CatalogoDTO catalogosFunDTO = null;
+				CatalogoDTO catalogosDTOHoraInicio = null;
+				CatalogoDTO catalogosDTOHoraFin = null;
+
+				try {
+					pathMicroCatalogosFun = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+							+ mprFuncionamiento.getFciaIdCatdiaFuncionamiento();
+					catalogosFunDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogosFun, token,
+							CatalogoDTO.class);
+
+					mprFuncionamiento.setNombre_cat_dia_funcionamiento(catalogosFunDTO.getCatNombre());
+				} catch (Exception e) {
+					catalogosFunDTO = null;
+				}
+
+				try {
+					pathMicroCatalogosHInicio = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+							+ mprFuncionamiento.getFciaIdCatHoraInicio();
+					catalogosDTOHoraInicio = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogosHInicio, token,
+							CatalogoDTO.class);
+					mprFuncionamiento.setNombre_fcia_id_cat_hora_inicio(catalogosDTOHoraInicio.getCatNombre());
+				} catch (Exception e) {
+					catalogosDTOHoraInicio = null;
+				}
+
+				try {
+					pathMicroCatalogosHFin = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+							+ mprFuncionamiento.getFciaIdCatHoraFin();
+					catalogosDTOHoraFin = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogosHFin, token,
+							CatalogoDTO.class);
+					mprFuncionamiento.setNombre_fcia_id_cat_hora_fin(catalogosDTOHoraFin.getCatNombre());
+				} catch (Exception e) {
+					catalogosDTOHoraFin = null;
+				}
+				return mprFuncionamiento;
+			}).collect(Collectors.toList());
+
+			// SPLIT CIOP_CAT_IDS_RUTA
+
+			System.out.println("***** ids catalogos para Split: " + mpr.getCiop_cat_ids_ruta());
+			String[] parts = SplitUsingTokenizer(mpr.getCiop_cat_ids_ruta(), ",");
+
+			System.out.println("/////// PARTES: " + parts);
+
+			for (String catIdsRuta : parts) {
+				try {
+					pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/" + catIdsRuta;
+					catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token,
+							CatalogoDTO.class);
+					String aux = mpr.getNombres_ciop_cat_ids_ruta();
+					if (aux != null) {
+						mpr.setNombres_ciop_cat_ids_ruta(aux + "/" + catalogosDTO.getCatNombre());
+					} else {
+						mpr.setNombres_ciop_cat_ids_ruta(catalogosDTO.getCatNombre());
+					}
+
+				} catch (Exception e) {
+					catalogosDTO = null;
+				}
+			}
+
 			return mpr;
 		}).collect(Collectors.toList());
 
@@ -157,6 +238,14 @@ public class GestionGopAgroController implements ErrorController {
 		Object map2 = mapper.convertValue(map, Object.class);
 		LOGGER.info("/cialcofertaprod/findAllPaginated/{ciaId}" + " usuario: " + util.filterUsuId(token));
 		return ResponseEntity.ok(map2);
+	}
+
+	public static String[] SplitUsingTokenizer(String subject, String delimiters) {
+		StringTokenizer strTkn = new StringTokenizer(subject, delimiters);
+		ArrayList<String> arrLis = new ArrayList<String>(subject.length());
+		while (strTkn.hasMoreTokens())
+			arrLis.add(strTkn.nextToken());
+		return arrLis.toArray(new String[0]);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -216,6 +305,7 @@ public class GestionGopAgroController implements ErrorController {
 			}
 			return mpr;
 		}).collect(Collectors.toList());
+
 		map.replace("data", f_cialco);
 		Object map2 = mapper.convertValue(map, Object.class);
 		LOGGER.info("/funcionamientocialco/findAllPaginated/" + " usuario: " + util.filterUsuId(token));
@@ -303,8 +393,54 @@ public class GestionGopAgroController implements ErrorController {
 		pathMicro = urlServidor + urlMicroGopAgro + "cialco/findById/" + id;
 		String pathMicroUbicacion = null;
 		UbicacionDTO ubicacionDTO = null;
-
 		Cialco cialco = convertEntityUtil.ConvertSingleEntityGET(pathMicro, token, Cialco.class);
+
+//		try {
+//			pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+//					+ cialco.getCiop_cat_id_oferta();
+//			catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
+//			mpr.setNombre_cio_oferta(catalogosDTO.getCatNombre());
+//		} catch (Exception e) {
+//			catalogosDTO = null;
+//		}
+
+		cialco.getFuncionamientoCialco().stream().map(mpr -> {
+			String pathMicroCatalogos = null;
+			CatalogoDTO catalogosDTO = null;
+			try {
+				pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+						+ mpr.getFciaIdCatdiaFuncionamiento();
+				catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
+				mpr.setNombre_cat_dia_funcionamiento(catalogosDTO.getCatNombre());
+			} catch (Exception e) {
+				catalogosDTO = null;
+			}
+
+			try {
+				pathMicroCatalogos = null;
+				catalogosDTO = null;
+				pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+						+ mpr.getFciaIdCatHoraInicio();
+				catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
+				mpr.setNombre_fcia_id_cat_hora_fin(catalogosDTO.getCatNombre());
+			} catch (Exception e) {
+				catalogosDTO = null;
+			}
+
+			try {
+				pathMicroCatalogos = null;
+				catalogosDTO = null;
+				pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+						+ mpr.getFciaIdCatHoraFin();
+				catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
+				mpr.setNombre_fcia_id_cat_hora_inicio(catalogosDTO.getCatNombre());
+			} catch (Exception e) {
+				catalogosDTO = null;
+			}
+
+			return mpr;
+		}).collect(Collectors.toList());
+
 		// SETTEAR NOMBRE PARROQUIA
 		try {
 			ubicacionDTO = null;

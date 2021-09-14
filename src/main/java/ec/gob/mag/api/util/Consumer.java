@@ -110,7 +110,6 @@ public class Consumer {
 			conn.setRequestMethod("GET");
 			conn.setRequestProperty("Accept", "application/json");
 			conn.setRequestProperty("Authorization", accessToken);
-//			conn.
 			if (conn.getResponseCode() != 200) {
 				String responseError = readerInputStream(conn.getErrorStream());
 				ExceptionResponse objectErrorResponse = convertStringToErrorObject(responseError);
@@ -138,6 +137,31 @@ public class Consumer {
 		con.setRequestProperty("Content-Type", "application/json");
 		con.setRequestProperty("Accept", "application/json");
 		con.setRequestMethod("POST");
+		con.setRequestProperty("Authorization", accessToken);
+		OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
+		wr.write(data.toString());
+		wr.flush();
+		int HttpResult = con.getResponseCode();
+		if (HttpResult == HttpURLConnection.HTTP_OK || HttpResult == HttpURLConnection.HTTP_CREATED) {
+			String responseError = readerInputStream(con.getInputStream());
+			Object objResponse = convertStringToObject(responseError);
+			return objResponse;
+		} else {
+			String responseError = readerInputStream(con.getErrorStream());
+			ExceptionResponse objectErrorResponse = convertStringToErrorObject(responseError);
+			launchException(objectErrorResponse);
+		}
+		return null;
+	}
+
+	public Object doPut(String urlString, String data, String accessToken) throws IOException {
+		URL object = new URL(urlString);
+		HttpURLConnection con = (HttpURLConnection) object.openConnection();
+		con.setDoOutput(true);
+		con.setDoInput(true);
+		con.setRequestProperty("Content-Type", "application/json");
+		con.setRequestProperty("Accept", "application/json");
+		con.setRequestMethod("PUT");
 		con.setRequestProperty("Authorization", accessToken);
 		OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
 		wr.write(data.toString());
