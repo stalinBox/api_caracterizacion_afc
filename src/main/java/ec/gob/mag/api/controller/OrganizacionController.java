@@ -1,6 +1,7 @@
 package ec.gob.mag.api.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,6 +26,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import ec.gob.mag.api.dto.OrganizacionDTO;
+import ec.gob.mag.api.dto.PersonaDTO;
+import ec.gob.mag.api.dto.SocioDTO;
 import ec.gob.mag.api.dto.UbicacionDTO;
 import ec.gob.mag.api.util.Consumer;
 import ec.gob.mag.api.util.ConvertEntityUtil;
@@ -60,6 +63,10 @@ public class OrganizacionController implements ErrorController {
 	@Autowired
 	@Qualifier("util")
 	private Util util;
+	
+
+	@Value("${url.persona}")
+	private String urlMicroPersona;
 
 	/***************************************
 	 * SECCION - MICROSERVICIOS
@@ -146,6 +153,36 @@ public class OrganizacionController implements ErrorController {
 		LOGGER.info("/api/organizacion/centroAcopio/create/" + data + " usuario: " + util.filterUsuId(token));
 		return ResponseEntity.ok(res);
 	}
+	
+	
+	
+	@SuppressWarnings("unchecked")
+	@GetMapping(value = "/findSociosbyOrgId/{orgId}")
+	@ApiOperation(value = "Busca todos los socios de una organizacion", response = Object.class)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> findSociosbyOrgId(@PathVariable Long orgId,
+			@RequestHeader(name = "Authorization") String token) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, IOException {
+		String pathMicro = null;
+		pathMicro = urlServidor + urlMicroPersona + "organizacion/findSocios/" + orgId;
+		List<SocioDTO> socios = (List<SocioDTO>) convertEntityUtil.ConvertListEntity(pathMicro, token, SocioDTO.class);
+		LOGGER.info("/api/organizacion/findSociosbyOrgId/" + orgId.toString()+ " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(socios);
+	}
+	
+	
+	@GetMapping(value = "/findByRepresentanteLegal/{perId}")
+	@ApiOperation(value = "Busca todas las organizaciones que tienen de representante legal perId", response = Object.class)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> findByRepresentanteLegal(@PathVariable Long perId,
+			@RequestHeader(name = "Authorization") String token) {
+	    String pathMicro = null;
+		pathMicro = urlServidor + urlMicroOrganizacion + "/organizacion/findByRepresentanteLegal/" + perId;
+		Object organizaciones= consumer.doGet(pathMicro, token);
+		LOGGER.info("/api/organizacion/findByRepresentanteLegal/" + perId.toString()+ " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(organizaciones);
+	}
+	
+	
 
 	@Override
 	public String getErrorPath() {
