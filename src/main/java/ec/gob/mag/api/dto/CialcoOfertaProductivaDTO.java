@@ -21,14 +21,14 @@ public class CialcoOfertaProductivaDTO {
 
 	@Id
 	private Integer nro;
-	private Long ciop_id;
-	private Integer cia_id;
+	private String ciop_id;
+	private String cia_id;
 	private String cia_nombre;
-	private Integer ciop_cat_id_oferta;
-	private Integer ciop_estado;
-	private Long ciop_reg_usu;
-	private Long ciop_act_usu;
-	private Boolean ciop_eliminado;
+	private String ciop_cat_id_oferta;
+	private String ciop_estado;
+	private String ciop_reg_usu;
+	private String ciop_act_usu;
+	private String ciop_eliminado;
 	private String nombre_ciop_cat_id_oferta;
 	private Integer totalRecords;
 	private String ciop_cat_ids_ruta;

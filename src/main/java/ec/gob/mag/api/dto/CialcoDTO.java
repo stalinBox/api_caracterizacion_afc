@@ -18,20 +18,20 @@ import lombok.Setter;
 public class CialcoDTO {
 
 	@Id
-	private Integer nro;
+	private String nro;
 	private Long cia_id;
-	private Integer ubi_id_provincia;
-	private Integer ubi_id_canton;
-	private Integer ubi_id_parroquia;
-	private Integer org_id;
-	private Integer soc_id;
-	private Integer tip_id;
+	private String ubi_id_provincia;
+	private String ubi_id_canton;
+	private String ubi_id_parroquia;
+	private String org_id;
+	private String soc_id;
+	private String tip_id;
 	private String per_identificacion;
 	private String per_nombres;
 	private String cia_nombre;
 	private String cia_descripcion;
 	private String cia_sect_referencia;
-	private Integer cia_id_cat_frecuencia;
+	private String cia_id_cat_frecuencia;
 	private String cia_direccion;
 	private String cia_telefono;
 	private String cia_celular;
@@ -43,16 +43,16 @@ public class CialcoDTO {
 	private String cia_cord_zona;
 	private String cia_cord_latitud;
 	private String cia_cord_longitud;
-	private Integer cia_estado_negocio;
+	private String cia_estado_negocio;
 	private String cia_negocio_observacion;
-	private Integer ciop_cat_id_oferta;
+	private String ciop_cat_id_oferta;
 
 	private String parroquia;
 	private String canton;
 	private String provincia;
 	private String nombre_cio_oferta;
-	private Boolean cia_eliminado;
-	private Integer cia_estado;
-	private Integer totalRecords;
+	private String cia_eliminado;
+	private String cia_estado;
+	private String totalRecords;
 
 }

@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -105,6 +106,32 @@ public class GestionGopAgroController implements ErrorController {
 		pathMicro = urlServidor + urlMicroGopAgro + "tipologiaNivel/create/";
 		Object res = consumer.doPost(pathMicro, data, token);
 		LOGGER.info("/api/gopagro/tipologiaNivel/create/" + data + " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(res);
+	}
+
+	@PutMapping(value = "/cialco/update/{usuId}")
+	@ApiOperation(value = "Guarda una cialco", response = Object.class)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> updateCialco(@RequestBody String updateCialco, @PathVariable Integer usuId,
+			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
+			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String pathMicro = null;
+		pathMicro = urlServidor + urlMicroGopAgro + "cialco/update/" + usuId;
+		Object res = consumer.doPut(pathMicro, updateCialco, token);
+		LOGGER.info("/api/gopagro/cialco/update/" + updateCialco + " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(res);
+	}
+
+	@PostMapping(value = "/cialco/create/")
+	@ApiOperation(value = "Guarda una cialco", response = Object.class)
+	@ResponseStatus(HttpStatus.CREATED)
+	public ResponseEntity<?> saveCialco(@RequestBody String data, @RequestHeader(name = "Authorization") String token)
+			throws JsonParseException, JsonMappingException, IOException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException {
+		String pathMicro = null;
+		pathMicro = urlServidor + urlMicroGopAgro + "cialco/create/";
+		Object res = consumer.doPost(pathMicro, data, token);
+		LOGGER.info("/api/gopagro/cialco/create/" + data + " usuario: " + util.filterUsuId(token));
 		return ResponseEntity.ok(res);
 	}
 
@@ -206,14 +233,7 @@ public class GestionGopAgroController implements ErrorController {
 				}
 				return mprFuncionamiento;
 			}).collect(Collectors.toList());
-
-			// SPLIT CIOP_CAT_IDS_RUTA
-
-			System.out.println("***** ids catalogos para Split: " + mpr.getCiop_cat_ids_ruta());
 			String[] parts = SplitUsingTokenizer(mpr.getCiop_cat_ids_ruta(), ",");
-
-			System.out.println("/////// PARTES: " + parts);
-
 			for (String catIdsRuta : parts) {
 				try {
 					pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/" + catIdsRuta;
@@ -394,15 +414,6 @@ public class GestionGopAgroController implements ErrorController {
 		String pathMicroUbicacion = null;
 		UbicacionDTO ubicacionDTO = null;
 		Cialco cialco = convertEntityUtil.ConvertSingleEntityGET(pathMicro, token, Cialco.class);
-
-//		try {
-//			pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
-//					+ cialco.getCiop_cat_id_oferta();
-//			catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
-//			mpr.setNombre_cio_oferta(catalogosDTO.getCatNombre());
-//		} catch (Exception e) {
-//			catalogosDTO = null;
-//		}
 
 		cialco.getFuncionamientoCialco().stream().map(mpr -> {
 			String pathMicroCatalogos = null;

@@ -180,8 +180,8 @@ public class Cialco {
 	@ApiModelProperty(value = "Estado Negocio", example = "etiqueta")
 	@Column(name = "cia_estado_negocio", nullable = false)
 	@NotEmpty(message = "_error.validation_blank.message")
-	@JsonProperty("ciacEstadoNegocio")
-	private Integer ciacEstadoNegocio;
+	@JsonProperty("ciaEstadoNegocio")
+	private Integer ciaEstadoNegocio;
 
 	@ApiModelProperty(value = "Valor texto de la hora de inicio", example = "etiqueta")
 	@Column(name = "cia_negocio_observacion", nullable = false)

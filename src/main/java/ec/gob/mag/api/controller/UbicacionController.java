@@ -118,6 +118,19 @@ public class UbicacionController implements ErrorController {
 		return ResponseEntity.ok(response);
 	}
 
+	@GetMapping(value = "/procedure/coordenada/findValidateUbicationParroquiaUtm/{ubiId}/{ubiX}/{ubiY}")
+	@ApiOperation(value = "Obtener y validar la ubicacion por ubiId en los cantones", response = Object.class)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> validateCoordenadasUTM(@PathVariable Long ubiId, @PathVariable Double ubiX,
+			@PathVariable Double ubiY, @RequestHeader(name = "Authorization") String token) {
+		String pathMicro = urlServidor + urlMicroUbicacion + "procedure/coordenada/findValidateUbicationParroquiaUtm/"
+				+ ubiId + "/" + ubiX + "/" + ubiY;
+		Object response = consumer.doGet(pathMicro, token);
+		LOGGER.info("ubicacion/coordenada/procedure/findValidateUbicationCanton/" + ubiId + "/" + ubiX + "/" + ubiY
+				+ response + " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(response);
+	}
+
 	@GetMapping(value = "/findByUbiId/{ubiId}")
 	@ApiOperation(value = "Get Ubicacion by ubiId", response = Object.class)
 	@ResponseStatus(HttpStatus.OK)

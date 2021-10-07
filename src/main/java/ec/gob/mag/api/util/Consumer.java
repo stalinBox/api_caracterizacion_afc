@@ -178,4 +178,32 @@ public class Consumer {
 		}
 		return null;
 	}
+
+	public Object doDelete(String urlString, String accessToken) {
+		// TODO Auto-generated method stub
+		Object objectResponse;
+		try {
+			URL url = new URL(urlString);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("DELETE");
+			conn.setRequestProperty("Accept", "application/json");
+			conn.setRequestProperty("Authorization", accessToken);
+			if (conn.getResponseCode() != 200) {
+				String responseError = readerInputStream(conn.getErrorStream());
+				ExceptionResponse objectErrorResponse = convertStringToErrorObject(responseError);
+				launchException(objectErrorResponse);
+			}
+			String responseError = readerInputStream(conn.getInputStream());
+			objectResponse = convertStringToObject(responseError);
+			conn.disconnect();
+			return objectResponse;
+
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
