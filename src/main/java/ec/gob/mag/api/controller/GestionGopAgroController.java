@@ -18,6 +18,7 @@ import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -90,22 +91,26 @@ public class GestionGopAgroController implements ErrorController {
 	private String urlMicroCatalogos;
 
 	/***************************************
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 * @throws SecurityException
-	 * @throws NoSuchFieldException
-	 ***************************************/
-
-	@PostMapping(value = "/tipologiaNivel/create/")
-	@ApiOperation(value = "Guarda una tipologia", response = Object.class)
-	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<?> saveTipologiaNivel(@RequestBody String data,
+	 * METODOS DE CIALCO
+	 **************************************/
+	/**
+	 * Realiza un eliminado logico del registro
+	 * 
+	 * @param id:    Identificador del registro
+	 * @param usuId: Identificador del usuario que va a eliminar
+	 * @return ResponseController: Retorna el id eliminado
+	 * @throws IOException
+	 */
+	@PatchMapping(value = "/cialco/state-record/")
+	@ApiOperation(value = "Gestionar estado del registro ciaEstado={11 ACTIVO,12 INACTIVO}, ciaEliminado={false, true}, state: {disable, delete, activate}")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> auditCialco(@RequestBody String auditCialco,
 			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
 			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroGopAgro + "tipologiaNivel/create/";
-		Object res = consumer.doPost(pathMicro, data, token);
-		LOGGER.info("/api/gopagro/tipologiaNivel/create/" + data + " usuario: " + util.filterUsuId(token));
+		pathMicro = urlServidor + urlMicroGopAgro + "/cialco/state-record/";
+		Object res = consumer.doPut(pathMicro, auditCialco, token);
+		LOGGER.info("/api/gopagro/cialco/update/" + auditCialco + " usuario: " + util.filterUsuId(token));
 		return ResponseEntity.ok(res);
 	}
 
@@ -133,203 +138,6 @@ public class GestionGopAgroController implements ErrorController {
 		Object res = consumer.doPost(pathMicro, data, token);
 		LOGGER.info("/api/gopagro/cialco/create/" + data + " usuario: " + util.filterUsuId(token));
 		return ResponseEntity.ok(res);
-	}
-
-	@PostMapping(value = "/cialcofertaprod/create/")
-	@ApiOperation(value = "Guarda una tipologia", response = Object.class)
-	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<?> saveOfertaProductivaCialco(@RequestBody String data,
-			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
-			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroGopAgro + "cialcofertaprod/create/";
-		Object res = consumer.doPost(pathMicro, data, token);
-		LOGGER.info("/api/gopagro/cialcofertaprod/create/" + data + " usuario: " + util.filterUsuId(token));
-		return ResponseEntity.ok(res);
-	}
-
-	// *** PAGINADOS
-	@SuppressWarnings("unchecked")
-	@GetMapping(value = "/cialcofertaprod/findAllPaginated/{ciaId}")
-	@ApiOperation(value = "Busca una cialco por id", response = Object.class)
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<?> cialcoOfertaProductivafindAllPaginated(@PathVariable Long ciaId,
-			HttpServletRequest request, @RequestHeader(name = "Authorization") String token)
-			throws JsonParseException, JsonMappingException, IOException, NoSuchFieldException, SecurityException,
-			IllegalArgumentException, IllegalAccessException {
-		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroGopAgro + "cialcofertaprod/findAllPaginated/" + ciaId + "/?"
-				+ request.getQueryString();
-		Object res = consumer.doGet(pathMicro, token);
-
-		ObjectMapper mapper = new ObjectMapper();
-		Map<String, Object> map = mapper.convertValue(res, Map.class);
-
-		List<CialcoOfertaProductivaDTO> cialco_oferta_p = (List<CialcoOfertaProductivaDTO>) convertEntityUtil
-				.ConvertListEntity(CialcoOfertaProductivaDTO.class, map.get("data"));
-
-		cialco_oferta_p = cialco_oferta_p.stream().map(mpr -> {
-			String pathMicroCatalogos = null;
-			CatalogoDTO catalogosDTO = null;
-			try {
-				pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
-						+ mpr.getCiop_cat_id_oferta();
-				catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
-				mpr.setNombre_ciop_cat_id_oferta(catalogosDTO.getCatNombre());
-			} catch (Exception e) {
-				catalogosDTO = null;
-			}
-
-			List<FuncionamientoCialco> funcionamientoDTO = null;
-			String pathMicroFuncionamiento = null;
-			try {
-				pathMicroFuncionamiento = urlServidor + urlMicroGopAgro + "funcionamientocialco/findByCiaId/"
-						+ mpr.getCia_id();
-				funcionamientoDTO = (List<FuncionamientoCialco>) convertEntityUtil
-						.ConvertListEntity(pathMicroFuncionamiento, token, FuncionamientoCialco.class);
-				mpr.setFuncionamientoCialco(funcionamientoDTO);
-			} catch (Exception e) {
-				funcionamientoDTO = null;
-			}
-
-			// ADD FUNCIONAMIENTO ENTITY
-			funcionamientoDTO.stream().map(mprFuncionamiento -> {
-				String pathMicroCatalogosFun = null;
-				String pathMicroCatalogosHInicio = null;
-				String pathMicroCatalogosHFin = null;
-				CatalogoDTO catalogosFunDTO = null;
-				CatalogoDTO catalogosDTOHoraInicio = null;
-				CatalogoDTO catalogosDTOHoraFin = null;
-
-				try {
-					pathMicroCatalogosFun = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
-							+ mprFuncionamiento.getFciaIdCatdiaFuncionamiento();
-					catalogosFunDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogosFun, token,
-							CatalogoDTO.class);
-
-					mprFuncionamiento.setNombre_cat_dia_funcionamiento(catalogosFunDTO.getCatNombre());
-				} catch (Exception e) {
-					catalogosFunDTO = null;
-				}
-
-				try {
-					pathMicroCatalogosHInicio = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
-							+ mprFuncionamiento.getFciaIdCatHoraInicio();
-					catalogosDTOHoraInicio = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogosHInicio, token,
-							CatalogoDTO.class);
-					mprFuncionamiento.setNombre_fcia_id_cat_hora_inicio(catalogosDTOHoraInicio.getCatNombre());
-				} catch (Exception e) {
-					catalogosDTOHoraInicio = null;
-				}
-
-				try {
-					pathMicroCatalogosHFin = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
-							+ mprFuncionamiento.getFciaIdCatHoraFin();
-					catalogosDTOHoraFin = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogosHFin, token,
-							CatalogoDTO.class);
-					mprFuncionamiento.setNombre_fcia_id_cat_hora_fin(catalogosDTOHoraFin.getCatNombre());
-				} catch (Exception e) {
-					catalogosDTOHoraFin = null;
-				}
-				return mprFuncionamiento;
-			}).collect(Collectors.toList());
-			String[] parts = SplitUsingTokenizer(mpr.getCiop_cat_ids_ruta(), ",");
-			for (String catIdsRuta : parts) {
-				try {
-					pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/" + catIdsRuta;
-					catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token,
-							CatalogoDTO.class);
-					String aux = mpr.getNombres_ciop_cat_ids_ruta();
-					if (aux != null) {
-						mpr.setNombres_ciop_cat_ids_ruta(aux + "/" + catalogosDTO.getCatNombre());
-					} else {
-						mpr.setNombres_ciop_cat_ids_ruta(catalogosDTO.getCatNombre());
-					}
-
-				} catch (Exception e) {
-					catalogosDTO = null;
-				}
-			}
-
-			return mpr;
-		}).collect(Collectors.toList());
-
-		map.replace("data", cialco_oferta_p);
-		Object map2 = mapper.convertValue(map, Object.class);
-		LOGGER.info("/cialcofertaprod/findAllPaginated/{ciaId}" + " usuario: " + util.filterUsuId(token));
-		return ResponseEntity.ok(map2);
-	}
-
-	public static String[] SplitUsingTokenizer(String subject, String delimiters) {
-		StringTokenizer strTkn = new StringTokenizer(subject, delimiters);
-		ArrayList<String> arrLis = new ArrayList<String>(subject.length());
-		while (strTkn.hasMoreTokens())
-			arrLis.add(strTkn.nextToken());
-		return arrLis.toArray(new String[0]);
-	}
-
-	@SuppressWarnings("unchecked")
-	@GetMapping(value = "/funcionamientocialco/findAllPaginated/{ciaId}")
-	@ApiOperation(value = "Busca una cialco por id", response = Object.class)
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<?> funcionamientoCialcoPaginated(@PathVariable Long ciaId, HttpServletRequest request,
-			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
-			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroGopAgro + "funcionamientocialco/findAllPaginated/" + ciaId + "/?"
-				+ request.getQueryString();
-		Object res = consumer.doGet(pathMicro, token);
-
-		ObjectMapper mapper = new ObjectMapper();
-		Map<String, Object> map = mapper.convertValue(res, Map.class);
-
-		List<FuncionamientoCialcoDTO> f_cialco = (List<FuncionamientoCialcoDTO>) convertEntityUtil
-				.ConvertListEntity(FuncionamientoCialcoDTO.class, map.get("data"));
-
-		f_cialco = f_cialco.stream().map(mpr -> {
-			String pathMicroCatalogos = null;
-			String pathMicroCatalogosHInicio = null;
-			String pathMicroCatalogosHFin = null;
-			CatalogoDTO catalogosDTO = null;
-			CatalogoDTO catalogosDTOHoraInicio = null;
-			CatalogoDTO catalogosDTOHoraFin = null;
-
-			try {
-				pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
-						+ mpr.getFcia_id_cat_dia_funcionamiento();
-				catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
-
-				mpr.setNombre_cat_dia_funcionamiento(catalogosDTO.getCatNombre());
-			} catch (Exception e) {
-				catalogosDTO = null;
-			}
-
-			try {
-				pathMicroCatalogosHInicio = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
-						+ mpr.getFcia_id_cat_hora_inicio();
-				catalogosDTOHoraInicio = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogosHInicio, token,
-						CatalogoDTO.class);
-				mpr.setNombre_fcia_id_cat_hora_inicio(catalogosDTOHoraInicio.getCatNombre());
-			} catch (Exception e) {
-				catalogosDTOHoraInicio = null;
-			}
-
-			try {
-				pathMicroCatalogosHFin = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
-						+ mpr.getFcia_id_cat_hora_fin();
-				catalogosDTOHoraFin = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogosHFin, token,
-						CatalogoDTO.class);
-				mpr.setNombre_fcia_id_cat_hora_fin(catalogosDTOHoraFin.getCatNombre());
-			} catch (Exception e) {
-				catalogosDTOHoraFin = null;
-			}
-			return mpr;
-		}).collect(Collectors.toList());
-
-		map.replace("data", f_cialco);
-		Object map2 = mapper.convertValue(map, Object.class);
-		LOGGER.info("/funcionamientocialco/findAllPaginated/" + " usuario: " + util.filterUsuId(token));
-		return ResponseEntity.ok(map2);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -485,6 +293,222 @@ public class GestionGopAgroController implements ErrorController {
 
 		LOGGER.info("/cialco/findById/" + id + " usuario: " + util.filterUsuId(token));
 		return ResponseEntity.ok(cialco);
+	}
+
+	/***************************************
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws SecurityException
+	 * @throws NoSuchFieldException
+	 ***************************************/
+
+	@PostMapping(value = "/tipologiaNivel/create/")
+	@ApiOperation(value = "Guarda una tipologia", response = Object.class)
+	@ResponseStatus(HttpStatus.CREATED)
+	public ResponseEntity<?> saveTipologiaNivel(@RequestBody String data,
+			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
+			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String pathMicro = null;
+		pathMicro = urlServidor + urlMicroGopAgro + "tipologiaNivel/create/";
+		Object res = consumer.doPost(pathMicro, data, token);
+		LOGGER.info("/api/gopagro/tipologiaNivel/create/" + data + " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(res);
+	}
+
+	@PostMapping(value = "/cialcofertaprod/create/")
+	@ApiOperation(value = "Guarda una tipologia", response = Object.class)
+	@ResponseStatus(HttpStatus.CREATED)
+	public ResponseEntity<?> saveOfertaProductivaCialco(@RequestBody String data,
+			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
+			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String pathMicro = null;
+		pathMicro = urlServidor + urlMicroGopAgro + "cialcofertaprod/create/";
+		Object res = consumer.doPost(pathMicro, data, token);
+		LOGGER.info("/api/gopagro/cialcofertaprod/create/" + data + " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(res);
+	}
+
+	// *** PAGINADOS
+	@SuppressWarnings("unchecked")
+	@GetMapping(value = "/cialcofertaprod/findAllPaginated/{ciaId}")
+	@ApiOperation(value = "Busca una cialco por id", response = Object.class)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> cialcoOfertaProductivafindAllPaginated(@PathVariable Long ciaId,
+			HttpServletRequest request, @RequestHeader(name = "Authorization") String token)
+			throws JsonParseException, JsonMappingException, IOException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException {
+		String pathMicro = null;
+		pathMicro = urlServidor + urlMicroGopAgro + "cialcofertaprod/findAllPaginated/" + ciaId + "/?"
+				+ request.getQueryString();
+		Object res = consumer.doGet(pathMicro, token);
+
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, Object> map = mapper.convertValue(res, Map.class);
+
+		List<CialcoOfertaProductivaDTO> cialco_oferta_p = (List<CialcoOfertaProductivaDTO>) convertEntityUtil
+				.ConvertListEntity(CialcoOfertaProductivaDTO.class, map.get("data"));
+
+		cialco_oferta_p = cialco_oferta_p.stream().map(mpr -> {
+			String pathMicroCatalogos = null;
+			CatalogoDTO catalogosDTO = null;
+			try {
+				pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+						+ mpr.getCiop_cat_id_oferta();
+				catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
+				mpr.setNombre_ciop_cat_id_oferta(catalogosDTO.getCatNombre());
+			} catch (Exception e) {
+				catalogosDTO = null;
+			}
+
+			List<FuncionamientoCialco> funcionamientoDTO = null;
+			String pathMicroFuncionamiento = null;
+			try {
+				pathMicroFuncionamiento = urlServidor + urlMicroGopAgro + "funcionamientocialco/findByCiaId/"
+						+ mpr.getCia_id();
+				funcionamientoDTO = (List<FuncionamientoCialco>) convertEntityUtil
+						.ConvertListEntity(pathMicroFuncionamiento, token, FuncionamientoCialco.class);
+				mpr.setFuncionamientoCialco(funcionamientoDTO);
+			} catch (Exception e) {
+				funcionamientoDTO = null;
+			}
+
+			// ADD FUNCIONAMIENTO ENTITY
+			funcionamientoDTO.stream().map(mprFuncionamiento -> {
+				String pathMicroCatalogosFun = null;
+				String pathMicroCatalogosHInicio = null;
+				String pathMicroCatalogosHFin = null;
+				CatalogoDTO catalogosFunDTO = null;
+				CatalogoDTO catalogosDTOHoraInicio = null;
+				CatalogoDTO catalogosDTOHoraFin = null;
+
+				try {
+					pathMicroCatalogosFun = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+							+ mprFuncionamiento.getFciaIdCatdiaFuncionamiento();
+					catalogosFunDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogosFun, token,
+							CatalogoDTO.class);
+
+					mprFuncionamiento.setNombre_cat_dia_funcionamiento(catalogosFunDTO.getCatNombre());
+				} catch (Exception e) {
+					catalogosFunDTO = null;
+				}
+
+				try {
+					pathMicroCatalogosHInicio = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+							+ mprFuncionamiento.getFciaIdCatHoraInicio();
+					catalogosDTOHoraInicio = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogosHInicio, token,
+							CatalogoDTO.class);
+					mprFuncionamiento.setNombre_fcia_id_cat_hora_inicio(catalogosDTOHoraInicio.getCatNombre());
+				} catch (Exception e) {
+					catalogosDTOHoraInicio = null;
+				}
+
+				try {
+					pathMicroCatalogosHFin = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+							+ mprFuncionamiento.getFciaIdCatHoraFin();
+					catalogosDTOHoraFin = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogosHFin, token,
+							CatalogoDTO.class);
+					mprFuncionamiento.setNombre_fcia_id_cat_hora_fin(catalogosDTOHoraFin.getCatNombre());
+				} catch (Exception e) {
+					catalogosDTOHoraFin = null;
+				}
+				return mprFuncionamiento;
+			}).collect(Collectors.toList());
+			String[] parts = SplitUsingTokenizer(mpr.getCiop_cat_ids_ruta(), ",");
+			for (String catIdsRuta : parts) {
+				try {
+					pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/" + catIdsRuta;
+					catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token,
+							CatalogoDTO.class);
+					String aux = mpr.getNombres_ciop_cat_ids_ruta();
+					if (aux != null) {
+						mpr.setNombres_ciop_cat_ids_ruta(aux + "/" + catalogosDTO.getCatNombre());
+					} else {
+						mpr.setNombres_ciop_cat_ids_ruta(catalogosDTO.getCatNombre());
+					}
+
+				} catch (Exception e) {
+					catalogosDTO = null;
+				}
+			}
+			return mpr;
+		}).collect(Collectors.toList());
+
+		map.replace("data", cialco_oferta_p);
+		Object map2 = mapper.convertValue(map, Object.class);
+		LOGGER.info("/cialcofertaprod/findAllPaginated/{ciaId}" + " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(map2);
+	}
+
+	public static String[] SplitUsingTokenizer(String subject, String delimiters) {
+		StringTokenizer strTkn = new StringTokenizer(subject, delimiters);
+		ArrayList<String> arrLis = new ArrayList<String>(subject.length());
+		while (strTkn.hasMoreTokens())
+			arrLis.add(strTkn.nextToken());
+		return arrLis.toArray(new String[0]);
+	}
+
+	@SuppressWarnings("unchecked")
+	@GetMapping(value = "/funcionamientocialco/findAllPaginated/{ciaId}")
+	@ApiOperation(value = "Busca una cialco por id", response = Object.class)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> funcionamientoCialcoPaginated(@PathVariable Long ciaId, HttpServletRequest request,
+			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
+			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String pathMicro = null;
+		pathMicro = urlServidor + urlMicroGopAgro + "funcionamientocialco/findAllPaginated/" + ciaId + "/?"
+				+ request.getQueryString();
+		Object res = consumer.doGet(pathMicro, token);
+
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, Object> map = mapper.convertValue(res, Map.class);
+
+		List<FuncionamientoCialcoDTO> f_cialco = (List<FuncionamientoCialcoDTO>) convertEntityUtil
+				.ConvertListEntity(FuncionamientoCialcoDTO.class, map.get("data"));
+
+		f_cialco = f_cialco.stream().map(mpr -> {
+			String pathMicroCatalogos = null;
+			String pathMicroCatalogosHInicio = null;
+			String pathMicroCatalogosHFin = null;
+			CatalogoDTO catalogosDTO = null;
+			CatalogoDTO catalogosDTOHoraInicio = null;
+			CatalogoDTO catalogosDTOHoraFin = null;
+
+			try {
+				pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+						+ mpr.getFcia_id_cat_dia_funcionamiento();
+				catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
+
+				mpr.setNombre_cat_dia_funcionamiento(catalogosDTO.getCatNombre());
+			} catch (Exception e) {
+				catalogosDTO = null;
+			}
+
+			try {
+				pathMicroCatalogosHInicio = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+						+ mpr.getFcia_id_cat_hora_inicio();
+				catalogosDTOHoraInicio = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogosHInicio, token,
+						CatalogoDTO.class);
+				mpr.setNombre_fcia_id_cat_hora_inicio(catalogosDTOHoraInicio.getCatNombre());
+			} catch (Exception e) {
+				catalogosDTOHoraInicio = null;
+			}
+
+			try {
+				pathMicroCatalogosHFin = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+						+ mpr.getFcia_id_cat_hora_fin();
+				catalogosDTOHoraFin = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogosHFin, token,
+						CatalogoDTO.class);
+				mpr.setNombre_fcia_id_cat_hora_fin(catalogosDTOHoraFin.getCatNombre());
+			} catch (Exception e) {
+				catalogosDTOHoraFin = null;
+			}
+			return mpr;
+		}).collect(Collectors.toList());
+
+		map.replace("data", f_cialco);
+		Object map2 = mapper.convertValue(map, Object.class);
+		LOGGER.info("/funcionamientocialco/findAllPaginated/" + " usuario: " + util.filterUsuId(token));
+		return ResponseEntity.ok(map2);
 	}
 
 	@GetMapping(value = "/cialcofertaprod/findById/{id}")

@@ -206,4 +206,30 @@ public class Consumer {
 		}
 		return null;
 	}
+
+	public Object doPatch(String urlString, String data, String accessToken) throws IOException {
+		URL object = new URL(urlString);
+		HttpURLConnection con = (HttpURLConnection) object.openConnection();
+		con.setDoOutput(true);
+		con.setDoInput(true);
+		con.setRequestProperty("Content-Type", "application/json");
+		con.setRequestProperty("Accept", "application/json");
+		con.setRequestMethod("PATCH");
+		con.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+		con.setRequestProperty("Authorization", accessToken);
+		OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
+		wr.write(data.toString());
+		wr.flush();
+		int HttpResult = con.getResponseCode();
+		if (HttpResult == HttpURLConnection.HTTP_OK || HttpResult == HttpURLConnection.HTTP_CREATED) {
+			String responseError = readerInputStream(con.getInputStream());
+			Object objResponse = convertStringToObject(responseError);
+			return objResponse;
+		} else {
+			String responseError = readerInputStream(con.getErrorStream());
+			ExceptionResponse objectErrorResponse = convertStringToErrorObject(responseError);
+			launchException(objectErrorResponse);
+		}
+		return null;
+	}
 }
