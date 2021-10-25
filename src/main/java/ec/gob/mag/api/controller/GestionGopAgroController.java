@@ -272,7 +272,22 @@ public class GestionGopAgroController implements ErrorController {
 			CatalogoDTO catalogosDTO = null;
 			UbicacionDTO ubicacionDTO = null;
 
+			// SETTEAR NOMBRE_TIP_CAT_ID
 			try {
+				pathMicroCatalogos = null;
+				System.out.println("SETTEAR NOMBRE_TIP_CAT_ID ");
+				pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/" + mpr.getTip_cat_id();
+				catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
+				mpr.setNombre_tip_cat_id(catalogosDTO.getCatNombre());
+				System.out.println("NOMBRE CATEGORIA: " + catalogosDTO.getCatNombre());
+				System.out.println("FIN");
+			} catch (Exception e) {
+				catalogosDTO = null;
+			}
+
+			// SETTEAR NOMBRE_CIALCO_OFERTA
+			try {
+				pathMicroCatalogos = null;
 				pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
 						+ mpr.getCiop_cat_id_oferta();
 				catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
@@ -1236,111 +1251,111 @@ public class GestionGopAgroController implements ErrorController {
 	 * 
 	 ****************************************************/
 
-	/**
-	 * Realiza un mantenimiento de estados del registro
-	 * 
-	 * @param auditCialco: json de entrada
-	 * @return ResponseController: Retorna el estado del registro
-	 * @throws IOException
-	 */
-	@PatchMapping(value = "/tipologiaNivel/state-record/")
-	@ApiOperation(value = "Gestionar estado del registro ciaEstado={11 ACTIVO,12 INACTIVO}, ciaEliminado={false, true}, state: {disable, delete, activate}")
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<?> auditTipologiaNivel(@RequestBody String audit,
-			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
-			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroGopAgro + "/tipologiaNivel/state-record/";
-		Object res = consumer.doPut(pathMicro, audit, token);
-		LOGGER.info("/api/gopagro/ofertadetalle/state-record/" + audit + " usuario: " + util.filterUsuId(token));
-		return ResponseEntity.ok(res);
-	}
-
-	/**
-	 * Devuelve todos los registros de la tabla TIPOLOGIA NIVEL
-	 * 
-	 * @param auditCialco: json de entrada
-	 * @return ResponseController: Retorna el estado del registro
-	 * @throws IOException
-	 */
-	@GetMapping(value = "/tipologiaNivel/findAll")
-	@ApiOperation(value = "Devuelve todos los registros de la tabla TIPOLOGIA NIVEL")
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<?> alltipologiaNivel(@RequestHeader(name = "Authorization") String token)
-			throws JsonParseException, JsonMappingException, IOException, NoSuchFieldException, SecurityException,
-			IllegalArgumentException, IllegalAccessException {
-		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroGopAgro + "/tipologiaNivel/findAll";
-		Object res = consumer.doGet(pathMicro, token);
-		LOGGER.info("/api/gopagro/tipologiaNivel/findAll" + "usuario" + util.filterUsuId(token));
-		return ResponseEntity.ok(res);
-	}
-
-	@GetMapping(value = "/tipologiaNivel/findById/{id}")
-	@ApiOperation(value = "Busca un registro de la tabla TIPOLOGIA NIVEL por id", response = Object.class)
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<?> findByIdtipologiaNivel(@PathVariable Long id,
-			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
-			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroGopAgro + "tipologiaNivel/findById/" + id;
-		Object resp = consumer.doGet(pathMicro, token);
-//		CatalogoDTO catalogosDTO = null;
-//		CialcoOfertaProductiva ciofprod = convertEntityUtil.ConvertSingleEntityGET(pathMicro, token,
-//				CialcoOfertaProductiva.class);
+//	/**
+//	 * Realiza un mantenimiento de estados del registro
+//	 * 
+//	 * @param auditCialco: json de entrada
+//	 * @return ResponseController: Retorna el estado del registro
+//	 * @throws IOException
+//	 */
+//	@PatchMapping(value = "/tipologiaNivel/state-record/")
+//	@ApiOperation(value = "Gestionar estado del registro ciaEstado={11 ACTIVO,12 INACTIVO}, ciaEliminado={false, true}, state: {disable, delete, activate}")
+//	@ResponseStatus(HttpStatus.OK)
+//	public ResponseEntity<?> auditTipologiaNivel(@RequestBody String audit,
+//			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
+//			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+//		String pathMicro = null;
+//		pathMicro = urlServidor + urlMicroGopAgro + "/tipologiaNivel/state-record/";
+//		Object res = consumer.doPut(pathMicro, audit, token);
+//		LOGGER.info("/api/gopagro/ofertadetalle/state-record/" + audit + " usuario: " + util.filterUsuId(token));
+//		return ResponseEntity.ok(res);
+//	}
 //
-//		try {
-//			pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
-//					+ ciofprod.getCiopCatIdOferta();
+//	/**
+//	 * Devuelve todos los registros de la tabla TIPOLOGIA NIVEL
+//	 * 
+//	 * @param auditCialco: json de entrada
+//	 * @return ResponseController: Retorna el estado del registro
+//	 * @throws IOException
+//	 */
+//	@GetMapping(value = "/tipologiaNivel/findAll")
+//	@ApiOperation(value = "Devuelve todos los registros de la tabla TIPOLOGIA NIVEL")
+//	@ResponseStatus(HttpStatus.OK)
+//	public ResponseEntity<?> alltipologiaNivel(@RequestHeader(name = "Authorization") String token)
+//			throws JsonParseException, JsonMappingException, IOException, NoSuchFieldException, SecurityException,
+//			IllegalArgumentException, IllegalAccessException {
+//		String pathMicro = null;
+//		pathMicro = urlServidor + urlMicroGopAgro + "/tipologiaNivel/findAll";
+//		Object res = consumer.doGet(pathMicro, token);
+//		LOGGER.info("/api/gopagro/tipologiaNivel/findAll" + "usuario" + util.filterUsuId(token));
+//		return ResponseEntity.ok(res);
+//	}
 //
-//			catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
-//			ciofprod.setNombre_cio_oferta(catalogosDTO.getCatNombre());
-//		} catch (Exception e) {
-//			catalogosDTO = null;
-//		}
-		LOGGER.info("/tipologiaNivel/findById/" + id + " usuario: " + util.filterUsuId(token));
-		return ResponseEntity.ok(resp);
-	}
+//	@GetMapping(value = "/tipologiaNivel/findById/{id}")
+//	@ApiOperation(value = "Busca un registro de la tabla TIPOLOGIA NIVEL por id", response = Object.class)
+//	@ResponseStatus(HttpStatus.OK)
+//	public ResponseEntity<?> findByIdtipologiaNivel(@PathVariable Long id,
+//			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
+//			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+//		String pathMicro = null;
+//		pathMicro = urlServidor + urlMicroGopAgro + "tipologiaNivel/findById/" + id;
+//		Object resp = consumer.doGet(pathMicro, token);
+////		CatalogoDTO catalogosDTO = null;
+////		CialcoOfertaProductiva ciofprod = convertEntityUtil.ConvertSingleEntityGET(pathMicro, token,
+////				CialcoOfertaProductiva.class);
+////
+////		try {
+////			pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+////					+ ciofprod.getCiopCatIdOferta();
+////
+////			catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
+////			ciofprod.setNombre_cio_oferta(catalogosDTO.getCatNombre());
+////		} catch (Exception e) {
+////			catalogosDTO = null;
+////		}
+//		LOGGER.info("/tipologiaNivel/findById/" + id + " usuario: " + util.filterUsuId(token));
+//		return ResponseEntity.ok(resp);
+//	}
 
-	/**
-	 * Actualiza un registro de la tabla Topologia nivel
-	 * 
-	 * @param certOferProd: json de entrada
-	 * @return ResponseController: Retorna el estado del registro
-	 * @throws IOException
-	 */
-	@PutMapping(value = "/tipologiaNivel/update/")
-	@ApiOperation(value = "Actualiza un registro de la tabla TIPOLOGIA NIVEL")
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<?> updatetipologiaNivel(@RequestBody String data,
-			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
-			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroGopAgro + "tipologiaNivel/update/";
-		Object res = consumer.doPut(pathMicro, data, token);
-		LOGGER.info("/api/gopagro/tipologiaNivel/update/" + data + " usuario: " + util.filterUsuId(token));
-		return ResponseEntity.ok(res);
-	}
-
-	/***************************************
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 * @throws SecurityException
-	 * @throws NoSuchFieldException
-	 ***************************************/
-
-	@PostMapping(value = "/tipologiaNivel/create/")
-	@ApiOperation(value = "Guarda un registro en la tabla TIPOLOGIA NIVEL", response = Object.class)
-	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<?> saveTipologiaNivel(@RequestBody String data,
-			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
-			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroGopAgro + "tipologiaNivel/create/";
-		Object res = consumer.doPost(pathMicro, data, token);
-		LOGGER.info("/api/gopagro/tipologiaNivel/create/" + data + " usuario: " + util.filterUsuId(token));
-		return ResponseEntity.ok(res);
-	}
+//	/**
+//	 * Actualiza un registro de la tabla Topologia nivel
+//	 * 
+//	 * @param certOferProd: json de entrada
+//	 * @return ResponseController: Retorna el estado del registro
+//	 * @throws IOException
+//	 */
+//	@PutMapping(value = "/tipologiaNivel/update/")
+//	@ApiOperation(value = "Actualiza un registro de la tabla TIPOLOGIA NIVEL")
+//	@ResponseStatus(HttpStatus.OK)
+//	public ResponseEntity<?> updatetipologiaNivel(@RequestBody String data,
+//			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
+//			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+//		String pathMicro = null;
+//		pathMicro = urlServidor + urlMicroGopAgro + "tipologiaNivel/update/";
+//		Object res = consumer.doPut(pathMicro, data, token);
+//		LOGGER.info("/api/gopagro/tipologiaNivel/update/" + data + " usuario: " + util.filterUsuId(token));
+//		return ResponseEntity.ok(res);
+//	}
+//
+//	/***************************************
+//	 * @throws IllegalAccessException
+//	 * @throws IllegalArgumentException
+//	 * @throws SecurityException
+//	 * @throws NoSuchFieldException
+//	 ***************************************/
+//
+//	@PostMapping(value = "/tipologiaNivel/create/")
+//	@ApiOperation(value = "Guarda un registro en la tabla TIPOLOGIA NIVEL", response = Object.class)
+//	@ResponseStatus(HttpStatus.CREATED)
+//	public ResponseEntity<?> saveTipologiaNivel(@RequestBody String data,
+//			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
+//			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+//		String pathMicro = null;
+//		pathMicro = urlServidor + urlMicroGopAgro + "tipologiaNivel/create/";
+//		Object res = consumer.doPost(pathMicro, data, token);
+//		LOGGER.info("/api/gopagro/tipologiaNivel/create/" + data + " usuario: " + util.filterUsuId(token));
+//		return ResponseEntity.ok(res);
+//	}
 
 	@Override
 	public String getErrorPath() {

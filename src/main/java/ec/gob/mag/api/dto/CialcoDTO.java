@@ -25,7 +25,7 @@ public class CialcoDTO {
 	private String ubi_id_parroquia;
 	private String org_id;
 	private String soc_id;
-	private String tip_id;
+	private String tip_cat_id;
 	private String per_identificacion;
 	private String per_nombres;
 	private String cia_nombre;
@@ -53,6 +53,7 @@ public class CialcoDTO {
 	private String nombre_cio_oferta;
 	private String cia_eliminado;
 	private String cia_estado;
+	private String nombre_tip_cat_id;
 	private String totalRecords;
 
 }
