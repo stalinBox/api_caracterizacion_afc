@@ -2,6 +2,8 @@ package ec.gob.mag.api.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -318,12 +320,22 @@ public class GestionGopAgroController implements ErrorController {
 			}
 
 			// SETTEAR NOMBRE_CIALCO_OFERTA
-			try {
-				pathMicroCatalogos = null;
-				pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
-						+ mpr.getCiop_cat_id_oferta();
-				catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
-				mpr.setNombre_cio_oferta(catalogosDTO.getCatNombre());
+			try {	
+				//convertir string a array
+				ArrayList<String> list = new ArrayList<>(Arrays.asList(mpr.getCiop_cat_id_oferta().split(",")));
+				Iterator<String> i = list.iterator();
+				String nombres = "";
+				//recorrer array				
+				
+				while(i.hasNext())
+				{
+					String	path=urlServidor + urlMicroCatalogos + "api/catalogo/findById/"+ i.next();;
+					catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(path, token, CatalogoDTO.class);
+					nombres = nombres + catalogosDTO.getCatNombre()+",";					
+				}				
+				nombres = nombres.substring(0, nombres.length()-1);				
+				mpr.setNombre_cio_oferta(nombres);
+				
 			} catch (Exception e) {
 				catalogosDTO = null;
 			}
