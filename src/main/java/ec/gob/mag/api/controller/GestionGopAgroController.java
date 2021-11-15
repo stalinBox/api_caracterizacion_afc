@@ -33,6 +33,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ec.gob.mag.api.dto.CatalogoDTO;
+import ec.gob.mag.api.dto.CertificacionOfertaProdDTO;
 import ec.gob.mag.api.dto.Cialco;
 import ec.gob.mag.api.dto.CialcoDTO;
 import ec.gob.mag.api.dto.CialcoOfertaProductiva;
@@ -110,7 +111,7 @@ public class GestionGopAgroController implements ErrorController {
 			@RequestHeader(name = "Authorization") String token) throws JsonParseException, JsonMappingException,
 			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroGopAgro + "/certofertaprod/state-record/";
+		pathMicro = urlServidor + urlMicroGopAgro + "certofertaprod/state-record/";
 		Object res = consumer.doPut(pathMicro, audit, token);
 		LOGGER.info("/api/gopagro/cialco/update/" + audit + " usuario: " + util.filterUsuId(token));
 		return ResponseEntity.ok(res);
@@ -123,6 +124,7 @@ public class GestionGopAgroController implements ErrorController {
 	 * @return ResponseController: Retorna el estado del registro
 	 * @throws IOException
 	 */
+	@SuppressWarnings("unchecked")
 	@GetMapping(value = "/certofertaprod/findAll")
 	@ApiOperation(value = "Gestionar estado del registro ciaEstado={11 ACTIVO,12 INACTIVO}, ciaEliminado={false, true}, state: {disable, delete, activate}")
 	@ResponseStatus(HttpStatus.OK)
@@ -130,10 +132,28 @@ public class GestionGopAgroController implements ErrorController {
 			throws JsonParseException, JsonMappingException, IOException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException {
 		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroGopAgro + "/certofertaprod/findAll";
-		Object res = consumer.doGet(pathMicro, token);
+
+		pathMicro = urlServidor + urlMicroGopAgro + "certofertaprod/findAll";
+		System.out.println("url: " + pathMicro);
+		List<CertificacionOfertaProdDTO> cop = (List<CertificacionOfertaProdDTO>) convertEntityUtil
+				.ConvertListEntity(pathMicro, token, CertificacionOfertaProdDTO.class);
+
+		cop.stream().forEach(mpr -> {
+			CatalogoDTO catalogosDTO = null;
+			try {
+				String pathMicroCatalogos = null;
+				pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+						+ mpr.getIdCatCertificacion();
+
+				catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
+				mpr.setNombre_idCatCertificacion(catalogosDTO.getCatNombre());
+			} catch (Exception e) {
+				catalogosDTO = null;
+			}
+		});
+
 		LOGGER.info("/api/gopagro/certofertaprod/findAll" + "usuario" + util.filterUsuId(token));
-		return ResponseEntity.ok(res);
+		return ResponseEntity.ok(cop);
 	}
 
 	/**
@@ -150,10 +170,22 @@ public class GestionGopAgroController implements ErrorController {
 			@PathVariable Long id) throws JsonParseException, JsonMappingException, IOException, NoSuchFieldException,
 			SecurityException, IllegalArgumentException, IllegalAccessException {
 		String pathMicro = null;
-		pathMicro = urlServidor + urlMicroGopAgro + "/certofertaprod/findById/" + id;
-		Object res = consumer.doGet(pathMicro, token);
+		pathMicro = urlServidor + urlMicroGopAgro + "certofertaprod/findById/" + id;
+		CatalogoDTO catalogosDTO = null;
+		CertificacionOfertaProdDTO cop = convertEntityUtil.ConvertSingleEntityGET(pathMicro, token,
+				CertificacionOfertaProdDTO.class);
+		try {
+			String pathMicroCatalogos = null;
+			pathMicroCatalogos = urlServidor + urlMicroCatalogos + "api/catalogo/findById/"
+					+ cop.getIdCatCertificacion();
+			catalogosDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicroCatalogos, token, CatalogoDTO.class);
+			cop.setNombre_idCatCertificacion(catalogosDTO.getCatNombre());
+		} catch (Exception e) {
+			catalogosDTO = null;
+		}
+
 		LOGGER.info("/api/gopagro/certofertaprod/findById" + id + " usuario" + util.filterUsuId(token));
-		return ResponseEntity.ok(res);
+		return ResponseEntity.ok(cop);
 	}
 
 	/**
