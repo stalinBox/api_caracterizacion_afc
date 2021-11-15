@@ -1,21 +1,21 @@
 package ec.gob.mag.api.util;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-@Service("convertEntityUtil")
-public class wrapperCatalogos {
-
-	@Autowired
-	@Qualifier("consumer")
-	private Consumer consumer;
+//import java.io.IOException;
+//import java.util.List;
+//
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Qualifier;
+//import org.springframework.stereotype.Service;
+//
+//import com.fasterxml.jackson.databind.DeserializationFeature;
+//import com.fasterxml.jackson.databind.ObjectMapper;
+//
+//@Service("convertEntityUtil")
+//public class wrapperCatalogos {
+//
+//	@Autowired
+//	@Qualifier("consumer")
+//	private Consumer consumer;
 
 //	public <T> T ConvertSingleEntityGET(String pathMicro, String auth, Class<T> clazz) throws IOException,
 //			NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -64,4 +64,4 @@ public class wrapperCatalogos {
 //		return mprObjecto.readValue(jsonString, mprObjecto.getTypeFactory().constructCollectionType(List.class, clazz));
 //	}
 
-}
+//}
